@@ -160,12 +160,11 @@ const XfyunTTS = {
         app_id: this.config.appId
       },
       business: {
-        aue: 'lame',        // MP3格式（浏览器兼容性最好）
-        sfl: 1,             // 开启流式返回（更快响应）
+        aue: 'lame',        // MP3格式
         auf: 'audio/L16;rate=16000',  // 音频采样率
-        vcn: 'luna',        // 英语女声Luna（发音更流畅）
-        speed: 45,          // 语速（稍慢一点更自然）
-        volume: 60,         // 音量（稍大一点）
+        vcn: 'x4_luna',     // Luna英语发音人（尝试x4前缀）
+        speed: 50,          // 语速
+        volume: 100,        // 音量最大
         pitch: 50,          // 音高
         tte: 'UTF8'         // 文本编码
       },
