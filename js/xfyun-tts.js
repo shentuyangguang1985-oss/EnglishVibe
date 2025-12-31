@@ -3,12 +3,25 @@
  * 文档：https://www.xfyun.cn/doc/tts/online_tts/API.html
  */
 
+// 内置配置（混淆存储）
+var _XF_TTS = (function() {
+  function d(s) {
+    try { return atob(s).split('').reverse().join(''); } 
+    catch(e) { return ''; }
+  }
+  return {
+    a: d('ZDVmYjU5MzY='),                                    // APPID
+    k: d('MWNiNGQ4ZmM0MzY3NTBlNGRkNGEzY2Y0YmJmMWNkMjU='),    // API Key
+    s: d('eWNUWjBRR00xSW1aeVlXTzVJek16RVdNd01qTW1OVE0=')     // API Secret
+  };
+})();
+
 const XfyunTTS = {
-  // API配置
+  // API配置（直接使用内置值）
   config: {
-    appId: '',
-    apiKey: '',
-    apiSecret: ''
+    appId: _XF_TTS.a,
+    apiKey: _XF_TTS.k,
+    apiSecret: _XF_TTS.s
   },
 
   // 当前WebSocket连接
@@ -22,17 +35,11 @@ const XfyunTTS = {
   onError: null,
 
   /**
-   * 初始化配置
+   * 初始化配置（内置配置，始终返回true）
    */
   init() {
-    const settings = Storage.getSettings();
-    if (settings.xfyunAppId && settings.xfyunApiKey && settings.xfyunApiSecret) {
-      this.config.appId = settings.xfyunAppId;
-      this.config.apiKey = settings.xfyunApiKey;
-      this.config.apiSecret = settings.xfyunApiSecret;
-      return true;
-    }
-    return false;
+    // 配置已内置，无需从Storage加载
+    return true;
   },
 
   /**
@@ -58,10 +65,6 @@ const XfyunTTS = {
     const signatureOrigin = 'host: ' + host + '\n' + 
                            'date: ' + date + '\n' + 
                            'GET ' + path + ' HTTP/1.1';
-    
-    console.log('[讯飞TTS] 签名原文:', JSON.stringify(signatureOrigin));
-    console.log('[讯飞TTS] API Secret长度:', this.config.apiSecret ? this.config.apiSecret.length : 0);
-    console.log('[讯飞TTS] API Secret前4位:', this.config.apiSecret ? this.config.apiSecret.substring(0, 4) : 'N/A');
     
     // 3. 使用 HMAC-SHA256 算法，以 api_secret 为密钥对签名原文进行签名
     const signatureSha = CryptoJS.HmacSHA256(signatureOrigin, this.config.apiSecret);
