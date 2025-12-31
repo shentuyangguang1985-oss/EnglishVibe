@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <meta name="theme-color" content="#7D93CD">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  
+  <title>设置 - EnglishVibe</title>
+  
+  <link rel="stylesheet" href="./css/style.css">
+  <link rel="icon" type="image/png" sizes="32x32" href="./assets/icons/icon-32.png">
+</head>
+<body>
+  <div class="app" id="app">
+    <!-- 顶部导航 -->
+    <header class="header">
+      <button class="header__back" id="btn-back">
+        <span>←</span>
+        <span>返回</span>
+      </button>
+      <span class="header__progress">设置</span>
+      <div style="width: 60px;"></div>
+    </header>
+
+    <!-- 主内容区 -->
+    <main class="main">
+      <!-- 学习设置 -->
+      <div class="settings-section">
+        <div class="settings-section__title">学习设置</div>
+        
+        <div class="settings-item">
+          <span class="settings-item__label">每日目标</span>
+          <div class="goal-selector" id="goal-selector">
+            <span class="goal-option" data-value="10">10词</span>
+            <span class="goal-option" data-value="15">15词</span>
+            <span class="goal-option" data-value="20">20词</span>
+            <span class="goal-option" data-value="30">30词</span>
+          </div>
+        </div>
+        
+        <div class="settings-item">
+          <span class="settings-item__label">当前词书</span>
+          <span class="settings-item__value" id="current-book">初中完整词库</span>
+        </div>
+      </div>
+
+      <!-- 学习进度 -->
+      <div class="settings-section">
+        <div class="settings-section__title">学习进度</div>
+        
+        <div class="settings-item">
+          <span class="settings-item__label">已学单词</span>
+          <span class="settings-item__value" id="stat-learned">0 词</span>
+        </div>
+        
+        <div class="settings-item">
+          <span class="settings-item__label">已掌握</span>
+          <span class="settings-item__value" id="stat-mastered">0 词</span>
+        </div>
+        
+        <div class="settings-item">
+          <span class="settings-item__label">连续学习</span>
+          <span class="settings-item__value" id="stat-streak">0 天</span>
+        </div>
+        
+        <div class="settings-item">
+          <span class="settings-item__label">开始日期</span>
+          <span class="settings-item__value" id="stat-start-date">--</span>
+        </div>
+      </div>
+
+      <!-- 危险操作 -->
+      <div class="settings-section">
+        <div class="settings-section__title">数据管理</div>
+        
+        <div class="settings-item" style="flex-direction: column; align-items: stretch; gap: 12px;">
+          <span class="settings-item__label">重置学习进度</span>
+          <button class="btn btn--danger" id="btn-reset" style="width: 100%;">
+            🗑️ 清除所有数据
+          </button>
+          <small style="color: #9BA5B7; text-align: center;">此操作不可恢复，请谨慎操作</small>
+        </div>
+      </div>
+
+      <!-- 关于 -->
+      <div class="settings-section">
+        <div class="settings-section__title">关于</div>
+        
+        <div class="settings-item">
+          <span class="settings-item__label">版本</span>
+          <span class="settings-item__value">MVP v1.0</span>
+        </div>
+        
+        <div class="settings-item">
+          <span class="settings-item__label">词库</span>
+          <span class="settings-item__value" id="vocab-count">-- 词</span>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- 确认弹窗 -->
+  <div class="confirm-dialog" id="confirm-dialog" style="display: none;">
+    <div class="confirm-dialog__overlay"></div>
+    <div class="confirm-dialog__content">
+      <div class="confirm-dialog__title">确认重置？</div>
+      <div class="confirm-dialog__message">这将清除所有学习进度和数据，此操作不可恢复。</div>
+      <div class="confirm-dialog__buttons">
+        <button class="btn btn--secondary" id="btn-cancel">取消</button>
+        <button class="btn btn--danger" id="btn-confirm">确认重置</button>
+      </div>
+    </div>
+  </div>
+
+  <style>
+    .confirm-dialog {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      z-index: 1000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .confirm-dialog__overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.5);
+    }
+    .confirm-dialog__content {
+      position: relative;
+      background: white;
+      padding: 24px;
+      border-radius: 16px;
+      max-width: 320px;
+      margin: 16px;
+      text-align: center;
+    }
+    .confirm-dialog__title {
+      font-size: 18px;
+      font-weight: 600;
+      margin-bottom: 12px;
+      color: #3A4750;
+    }
+    .confirm-dialog__message {
+      font-size: 14px;
+      color: #6B778D;
+      margin-bottom: 24px;
+    }
+    .confirm-dialog__buttons {
+      display: flex;
+      gap: 12px;
+    }
+    .confirm-dialog__buttons .btn {
+      flex: 1;
+      padding: 12px;
+    }
+  </style>
+
+  <script src="./js/storage.js"></script>
+  <script src="./js/vocabulary.js"></script>
+  <script>
+    const Settings = {
+      async init() {
+        // 加载设置
+        const settings = Storage.getSettings();
+        const progress = Storage.getProgress();
+        
+        // 加载词库获取总数
+        await Vocabulary.loadBook(progress.currentBook);
+        
+        // 显示每日目标
+        this.updateGoalSelector(settings.dailyGoal);
+        
+        // 显示词书
+        const bookInfo = Vocabulary.getBookInfo(progress.currentBook);
+        document.getElementById('current-book').textContent = bookInfo?.name || '七年级上册';
+        
+        // 显示统计
+        document.getElementById('stat-learned').textContent = (progress.totalStats.totalLearned || 0) + ' 词';
+        document.getElementById('stat-mastered').textContent = (progress.totalStats.totalMastered || 0) + ' 词';
+        document.getElementById('stat-streak').textContent = (progress.totalStats.streakDays || 0) + ' 天';
+        document.getElementById('stat-start-date').textContent = progress.totalStats.startDate || '--';
+        document.getElementById('vocab-count').textContent = Vocabulary.getTotalCount() + ' 词';
+        
+        // 绑定事件
+        this.bindEvents();
+      },
+
+      updateGoalSelector(currentGoal) {
+        const options = document.querySelectorAll('.goal-option');
+        options.forEach(opt => {
+          if (parseInt(opt.dataset.value) === currentGoal) {
+            opt.classList.add('active');
+          } else {
+            opt.classList.remove('active');
+          }
+        });
+      },
+
+      bindEvents() {
+        // 返回按钮
+        document.getElementById('btn-back').addEventListener('click', () => {
+          window.location.href = './index.html';
+        });
+
+        // 目标选择
+        document.querySelectorAll('.goal-option').forEach(opt => {
+          opt.addEventListener('click', () => {
+            const value = parseInt(opt.dataset.value);
+            Storage.updateSetting('dailyGoal', value);
+            
+            // 同时更新进度中的目标
+            const progress = Storage.getProgress();
+            progress.dailyGoal = value;
+            Storage.saveProgress(progress);
+            
+            this.updateGoalSelector(value);
+          });
+        });
+
+        // 重置按钮
+        document.getElementById('btn-reset').addEventListener('click', () => {
+          document.getElementById('confirm-dialog').style.display = 'flex';
+        });
+
+        // 取消重置
+        document.getElementById('btn-cancel').addEventListener('click', () => {
+          document.getElementById('confirm-dialog').style.display = 'none';
+        });
+
+        // 确认重置
+        document.getElementById('btn-confirm').addEventListener('click', () => {
+          Storage.clear();
+          window.location.href = './index.html';
+        });
+
+        // 点击遮罩关闭
+        document.querySelector('.confirm-dialog__overlay').addEventListener('click', () => {
+          document.getElementById('confirm-dialog').style.display = 'none';
+        });
+      }
+    };
+
+    document.addEventListener('DOMContentLoaded', () => {
+      Settings.init();
+    });
+  </script>
+</body>
+</html>
+

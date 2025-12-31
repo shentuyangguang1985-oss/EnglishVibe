@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <meta name="theme-color" content="#7D93CD">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="description" content="EnglishVibe - 初中英语单词学习助手，图背单词，轻松记忆">
+  
+  <title>EnglishVibe - 英语单词学习</title>
+  
+  <!-- 样式 -->
+  <link rel="stylesheet" href="./css/style.css">
+  
+  <!-- PWA 图标 -->
+  <link rel="icon" type="image/png" sizes="32x32" href="./assets/icons/icon-32.png">
+  <link rel="apple-touch-icon" href="./assets/icons/icon-192.png">
+  
+  <!-- PWA Manifest -->
+  <link rel="manifest" href="./manifest.json">
+</head>
+<body>
+  <div class="app" id="app">
+    <!-- 顶部导航 -->
+    <header class="header">
+      <div class="header__logo">
+        <span class="header__logo-icon">📚</span>
+        <span class="header__logo-text">EnglishVibe</span>
+      </div>
+      <button class="header__settings" id="btn-settings" aria-label="设置">
+        ⚙️
+      </button>
+    </header>
+
+    <!-- 主内容区 -->
+    <main class="main">
+      <!-- 今日任务卡片 -->
+      <div class="task-card fade-in">
+        <div class="task-card__title">
+          <span class="task-card__title-icon">📖</span>
+          今日学习任务
+        </div>
+        
+        <div class="task-card__stats">
+          <div class="task-card__stat">
+            <span class="task-card__stat-label">新学</span>
+            <span class="task-card__stat-value">
+              <span id="stat-new-learned">0</span> / <span id="stat-daily-goal">20</span> 词
+            </span>
+          </div>
+          <div class="task-card__stat">
+            <span class="task-card__stat-label">待复习</span>
+            <span class="task-card__stat-value task-card__stat-value--warning" id="stat-review-count">
+              0 词
+            </span>
+          </div>
+          <div class="task-card__stat">
+            <span class="task-card__stat-label">今日正确率</span>
+            <span class="task-card__stat-value task-card__stat-value--highlight" id="stat-accuracy">
+              --
+            </span>
+          </div>
+        </div>
+
+        <!-- 总进度 -->
+        <div class="progress-section">
+          <div class="progress-section__header">
+            <span class="progress-section__label">总进度</span>
+            <span class="progress-section__value">
+              <span id="stat-total-learned">0</span> / <span id="stat-total-words">0</span> 词
+              <span class="progress-percent" id="progress-percent">(0%)</span>
+            </span>
+          </div>
+          <div class="progress-bar">
+            <div class="progress-bar__fill" id="progress-fill" style="width: 0%"></div>
+          </div>
+        </div>
+
+        <!-- 已掌握统计 -->
+        <div class="mastered-section">
+          <div class="mastered-stat">
+            <span class="mastered-stat__icon">✅</span>
+            <span class="mastered-stat__label">已掌握</span>
+            <span class="mastered-stat__value" id="stat-mastered">0</span>
+            <span class="mastered-stat__unit">词</span>
+          </div>
+          <div class="mastered-stat">
+            <span class="mastered-stat__icon">🔥</span>
+            <span class="mastered-stat__label">连续</span>
+            <span class="mastered-stat__value" id="stat-streak">0</span>
+            <span class="mastered-stat__unit">天</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- 操作按钮 -->
+      <div class="action-buttons">
+        <button class="btn btn--primary" id="btn-learn">
+          <span class="btn__icon">🎯</span>
+          开始学习
+        </button>
+        
+        <button class="btn btn--secondary" id="btn-review" style="display: none;">
+          <span class="btn__icon">🔄</span>
+          开始复习
+          <span class="btn__badge" id="review-badge">0</span>
+        </button>
+      </div>
+    </main>
+
+    <!-- 底部信息 -->
+    <footer class="footer-info">
+      <span class="footer-info__icon">📅</span>
+      预计完成：还需 <span class="footer-info__highlight" id="stat-remaining-days">--</span> 天
+      <br>
+      <small>（按每天 <span id="stat-daily-goal-footer">20</span> 词计算）</small>
+    </footer>
+  </div>
+
+  <!-- 加载提示 -->
+  <div id="loading" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(255,255,255,0.9); display: flex; align-items: center; justify-content: center; z-index: 9999;">
+    <div style="text-align: center;">
+      <div style="font-size: 48px; margin-bottom: 16px;">📚</div>
+      <div style="color: #6B778D;">加载中...</div>
+    </div>
+  </div>
+
+  <!-- 脚本 -->
+  <script src="./js/storage.js"></script>
+  <script src="./js/vocabulary.js"></script>
+  <script src="./js/app.js"></script>
+  
+  <!-- Service Worker 注册 -->
+  <script>
+    // 注册 Service Worker 实现 PWA
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('./sw.js')
+          .then(registration => {
+            console.log('SW registered:', registration.scope);
+          })
+          .catch(error => {
+            console.log('SW registration failed:', error);
+          });
+      });
+    }
+    
+    // PWA 安装提示
+    let deferredPrompt;
+    window.addEventListener('beforeinstallprompt', (e) => {
+      // 阻止默认提示
+      e.preventDefault();
+      deferredPrompt = e;
+      
+      // 显示自定义安装按钮（可选）
+      showInstallButton();
+    });
+    
+    function showInstallButton() {
+      // 创建安装按钮（如果首页没有待复习词）
+      const btnReview = document.getElementById('btn-review');
+      if (btnReview && btnReview.style.display === 'none') {
+        const installBtn = document.createElement('button');
+        installBtn.className = 'btn btn--secondary';
+        installBtn.innerHTML = '<span class="btn__icon">📲</span> 安装到桌面';
+        installBtn.style.marginTop = '8px';
+        installBtn.onclick = installApp;
+        
+        const actionButtons = document.querySelector('.action-buttons');
+        if (actionButtons && !document.getElementById('btn-install')) {
+          installBtn.id = 'btn-install';
+          actionButtons.appendChild(installBtn);
+        }
+      }
+    }
+    
+    async function installApp() {
+      if (!deferredPrompt) return;
+      
+      deferredPrompt.prompt();
+      const { outcome } = await deferredPrompt.userChoice;
+      
+      if (outcome === 'accepted') {
+        console.log('User accepted the install prompt');
+      }
+      deferredPrompt = null;
+      
+      // 隐藏安装按钮
+      const installBtn = document.getElementById('btn-install');
+      if (installBtn) installBtn.remove();
+    }
+    
+    // 监听安装完成
+    window.addEventListener('appinstalled', () => {
+      console.log('PWA was installed');
+      deferredPrompt = null;
+    });
+  </script>
+</body>
+</html>

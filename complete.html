@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <meta name="theme-color" content="#7D93CD">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  
+  <title>学习完成 - EnglishVibe</title>
+  
+  <link rel="stylesheet" href="./css/style.css">
+  <link rel="icon" type="image/png" sizes="32x32" href="./assets/icons/icon-32.png">
+  
+  <style>
+    .complete-container {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      background: linear-gradient(135deg, #E8F5E9 0%, #C8E6C9 50%, #A5D6A7 100%);
+    }
+    
+    .complete-header {
+      padding: var(--spacing-lg);
+      text-align: center;
+    }
+    
+    .complete-content {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: var(--spacing-xl);
+      text-align: center;
+    }
+    
+    .trophy {
+      font-size: 100px;
+      margin-bottom: var(--spacing-lg);
+      animation: trophy-bounce 1s ease infinite;
+    }
+    
+    @keyframes trophy-bounce {
+      0%, 100% { transform: translateY(0) rotate(-5deg); }
+      50% { transform: translateY(-15px) rotate(5deg); }
+    }
+    
+    .complete-title {
+      font-size: 32px;
+      font-weight: 700;
+      color: var(--text-primary);
+      margin-bottom: var(--spacing-sm);
+    }
+    
+    .complete-subtitle {
+      font-size: var(--font-size-lg);
+      color: var(--text-secondary);
+      margin-bottom: var(--spacing-xl);
+    }
+    
+    .stats-card {
+      background: white;
+      border-radius: var(--radius-xl);
+      padding: var(--spacing-xl);
+      width: 100%;
+      max-width: 320px;
+      box-shadow: var(--shadow-lg);
+      margin-bottom: var(--spacing-xl);
+    }
+    
+    .stats-card__title {
+      font-size: var(--font-size-sm);
+      color: var(--text-light);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: var(--spacing-md);
+    }
+    
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: var(--spacing-md);
+    }
+    
+    .stat-item {
+      text-align: center;
+      padding: var(--spacing-md);
+      background: var(--bg-secondary);
+      border-radius: var(--radius-md);
+    }
+    
+    .stat-item__icon {
+      font-size: 24px;
+      margin-bottom: var(--spacing-xs);
+    }
+    
+    .stat-item__value {
+      font-size: var(--font-size-2xl);
+      font-weight: 700;
+      color: var(--primary);
+      margin-bottom: var(--spacing-xs);
+    }
+    
+    .stat-item__label {
+      font-size: var(--font-size-xs);
+      color: var(--text-secondary);
+    }
+    
+    .stat-item--highlight {
+      background: linear-gradient(135deg, var(--primary-light), var(--primary));
+      color: white;
+    }
+    
+    .stat-item--highlight .stat-item__value,
+    .stat-item--highlight .stat-item__label {
+      color: white;
+    }
+    
+    .motivational-text {
+      font-size: var(--font-size-md);
+      color: var(--text-secondary);
+      margin-bottom: var(--spacing-xl);
+      line-height: 1.6;
+    }
+    
+    .complete-actions {
+      display: flex;
+      flex-direction: column;
+      gap: var(--spacing-md);
+      width: 100%;
+      max-width: 320px;
+    }
+    
+    .btn--success {
+      background: linear-gradient(135deg, var(--success), #5a9a6e);
+      color: white;
+      box-shadow: 0 4px 16px rgba(124, 184, 143, 0.4);
+    }
+    
+    .btn--success:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(124, 184, 143, 0.5);
+    }
+    
+    .confetti {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      pointer-events: none;
+      overflow: hidden;
+      z-index: 100;
+    }
+    
+    .confetti-piece {
+      position: absolute;
+      width: 10px;
+      height: 10px;
+      opacity: 0;
+      animation: confetti-fall 3s ease-in-out forwards;
+    }
+    
+    @keyframes confetti-fall {
+      0% {
+        transform: translateY(-100px) rotate(0deg);
+        opacity: 1;
+      }
+      100% {
+        transform: translateY(100vh) rotate(720deg);
+        opacity: 0;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="app complete-container" id="app">
+    <!-- 五彩纸屑效果 -->
+    <div class="confetti" id="confetti"></div>
+    
+    <!-- 主内容 -->
+    <div class="complete-content">
+      <div class="trophy">🏆</div>
+      <h1 class="complete-title" id="complete-title">今日目标达成！</h1>
+      <p class="complete-subtitle" id="complete-subtitle">太棒了，继续保持！</p>
+      
+      <!-- 统计卡片 -->
+      <div class="stats-card">
+        <div class="stats-card__title">今日学习成果</div>
+        <div class="stats-grid">
+          <div class="stat-item">
+            <div class="stat-item__icon">📚</div>
+            <div class="stat-item__value" id="stat-new">0</div>
+            <div class="stat-item__label">新学单词</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-item__icon">🔄</div>
+            <div class="stat-item__value" id="stat-review">0</div>
+            <div class="stat-item__label">复习单词</div>
+          </div>
+          <div class="stat-item stat-item--highlight">
+            <div class="stat-item__icon">✅</div>
+            <div class="stat-item__value" id="stat-accuracy">0%</div>
+            <div class="stat-item__label">正确率</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-item__icon">🔥</div>
+            <div class="stat-item__value" id="stat-streak">0</div>
+            <div class="stat-item__label">连续天数</div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- 激励文字 -->
+      <p class="motivational-text" id="motivational-text">
+        坚持就是胜利！每天进步一点点，积少成多！
+      </p>
+      
+      <!-- 操作按钮 -->
+      <div class="complete-actions">
+        <button class="btn btn--success" id="btn-continue">
+          <span class="btn__icon">➕</span>
+          继续学习
+        </button>
+        <button class="btn btn--primary" id="btn-review" style="display: none;">
+          <span class="btn__icon">🔄</span>
+          开始复习
+          <span class="btn__badge" id="review-count">0</span>
+        </button>
+        <button class="btn btn--secondary" id="btn-home">
+          <span class="btn__icon">🏠</span>
+          返回首页
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script src="./js/storage.js"></script>
+  <script>
+    const Complete = {
+      // 激励语句
+      motivationalTexts: [
+        '坚持就是胜利！每天进步一点点，积少成多！',
+        '优秀是一种习惯，你正在变得越来越优秀！',
+        '今天的努力，是明天成功的基石！',
+        '每一个单词都是通往成功的一步！',
+        '学习不在于时间长短，而在于坚持不懈！',
+        '你的努力终将化作未来的礼物！',
+        '滴水穿石，不是力量大，而是功夫深！',
+        '今天又进步了，为自己点个赞！👍',
+        '词汇量+1，距离目标又近了一步！',
+        '知识的积累，让你更加闪闪发光！✨'
+      ],
+
+      init() {
+        // 加载统计数据
+        const todayStats = Storage.getTodayStats();
+        const progress = Storage.getProgress();
+        const reviewWords = Storage.getTodayReviewWords();
+        
+        // 显示统计
+        document.getElementById('stat-new').textContent = todayStats.newLearned || 0;
+        document.getElementById('stat-review').textContent = todayStats.reviewed || 0;
+        
+        // 计算正确率
+        const total = (todayStats.correctCount || 0) + (todayStats.wrongCount || 0);
+        const accuracy = total > 0 ? Math.round((todayStats.correctCount / total) * 100) : 0;
+        document.getElementById('stat-accuracy').textContent = accuracy + '%';
+        
+        // 连续天数
+        document.getElementById('stat-streak').textContent = progress.totalStats.streakDays || 0;
+        
+        // 复习按钮
+        if (reviewWords.length > 0) {
+          document.getElementById('btn-review').style.display = 'flex';
+          document.getElementById('review-count').textContent = reviewWords.length;
+        }
+        
+        // 随机激励语句
+        const randomIndex = Math.floor(Math.random() * this.motivationalTexts.length);
+        document.getElementById('motivational-text').textContent = this.motivationalTexts[randomIndex];
+        
+        // 根据完成情况显示不同标题
+        this.updateTitle(todayStats, progress);
+        
+        // 绑定事件
+        this.bindEvents();
+        
+        // 播放五彩纸屑效果
+        this.playConfetti();
+      },
+
+      updateTitle(todayStats, progress) {
+        const settings = Storage.getSettings();
+        const dailyGoal = settings.dailyGoal || 20;
+        
+        // 检查是否完成今日目标
+        if (todayStats.newLearned >= dailyGoal) {
+          document.getElementById('complete-title').textContent = '今日目标达成！';
+          document.getElementById('complete-subtitle').textContent = '太棒了，继续保持！';
+        } else {
+          document.getElementById('complete-title').textContent = '学习完成';
+          document.getElementById('complete-subtitle').textContent = `已学 ${todayStats.newLearned} / ${dailyGoal} 词`;
+        }
+      },
+
+      bindEvents() {
+        // 继续学习
+        document.getElementById('btn-continue').addEventListener('click', () => {
+          window.location.href = './learn.html';
+        });
+        
+        // 开始复习
+        document.getElementById('btn-review').addEventListener('click', () => {
+          window.location.href = './review.html';
+        });
+        
+        // 返回首页
+        document.getElementById('btn-home').addEventListener('click', () => {
+          window.location.href = './index.html';
+        });
+      },
+
+      playConfetti() {
+        const confetti = document.getElementById('confetti');
+        const colors = ['#7D93CD', '#F48E91', '#7CB88F', '#F9D891', '#9AAFDB', '#F9B5B7'];
+        
+        // 创建50个五彩纸屑
+        for (let i = 0; i < 50; i++) {
+          setTimeout(() => {
+            const piece = document.createElement('div');
+            piece.className = 'confetti-piece';
+            piece.style.left = Math.random() * 100 + '%';
+            piece.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+            piece.style.borderRadius = Math.random() > 0.5 ? '50%' : '0';
+            piece.style.animationDelay = Math.random() * 0.5 + 's';
+            piece.style.animationDuration = (2 + Math.random() * 2) + 's';
+            confetti.appendChild(piece);
+            
+            // 动画结束后移除
+            setTimeout(() => piece.remove(), 4000);
+          }, i * 50);
+        }
+      }
+    };
+
+    document.addEventListener('DOMContentLoaded', () => {
+      Complete.init();
+    });
+  </script>
+</body>
+</html>
+

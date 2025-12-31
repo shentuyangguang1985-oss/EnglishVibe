@@ -1,0 +1,52 @@
+[
+    {
+        "id": "j1_001",
+        "word": "apple",
+        "phonetic": "/ˈæpl/",
+        "meaning": "n. 苹果",
+        "image": "https://images.unsplash.com/photo-1560806887-1e4cd0b6bccb?q=80&w=400&auto=format&fit=crop",
+        "sentence": "An apple a day keeps the doctor away.",
+        "sentence_cn": "一日一苹果，医生远离我。",
+        "level": "Junior 1"
+    },
+    {
+        "id": "j1_002",
+        "word": "banana",
+        "phonetic": "/bəˈnɑːnə/",
+        "meaning": "n. 香蕉",
+        "image": "https://images.unsplash.com/photo-1571771894821-ad99024157c6?q=80&w=400&auto=format&fit=crop",
+        "sentence": "This banana is very sweet.",
+        "sentence_cn": "这个香蕉非常甜。",
+        "level": "Junior 1"
+    },
+    {
+        "id": "j1_003",
+        "word": "computer",
+        "phonetic": "/kəmˈpjuːtə/",
+        "meaning": "n. 计算机，电脑",
+        "image": "https://images.unsplash.com/photo-1547394765-185e1e68f34e?q=80&w=400&auto=format&fit=crop",
+        "sentence": "I use my computer to study English.",
+        "sentence_cn": "我用电脑学英语。",
+        "level": "Junior 1"
+    },
+    {
+        "id": "j1_004",
+        "word": "student",
+        "phonetic": "/ˈstjuːdnt/",
+        "meaning": "n. 学生",
+        "image": "https://images.unsplash.com/photo-1523240795612-9a054b0db644?q=80&w=400&auto=format&fit=crop",
+        "sentence": "She is a hard-working student.",
+        "sentence_cn": "她是一个努力学习的学生。",
+        "level": "Junior 1"
+    },
+    {
+        "id": "j1_005",
+        "word": "teacher",
+        "phonetic": "/ˈtiːtʃə/",
+        "meaning": "n. 老师，教师",
+        "image": "https://images.unsplash.com/photo-1577896851231-70ef18881754?q=80&w=400&auto=format&fit=crop",
+        "sentence": "Our teacher is very kind to us.",
+        "sentence_cn": "我们的老师对我们很友好。",
+        "level": "Junior 1"
+    }
+]

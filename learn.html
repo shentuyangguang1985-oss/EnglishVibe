@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <meta name="theme-color" content="#7D93CD">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  
+  <title>学习 - EnglishVibe</title>
+  
+  <!-- 样式 -->
+  <link rel="stylesheet" href="./css/style.css">
+  <link rel="icon" type="image/png" sizes="32x32" href="./assets/icons/icon-32.png">
+</head>
+<body>
+  <div class="app" id="app">
+    <!-- 顶部导航 -->
+    <header class="header">
+      <button class="header__back" id="btn-back">
+        <span>←</span>
+        <span>返回</span>
+      </button>
+      <span class="header__progress" id="progress-text">1 / 20</span>
+      <button class="header__settings" id="btn-pause" aria-label="暂停">
+        ⏸️
+      </button>
+    </header>
+
+    <!-- 学习进度条 -->
+    <div class="learn-progress">
+      <div class="learn-progress__bar">
+        <div class="learn-progress__fill" id="progress-bar" style="width: 0%"></div>
+      </div>
+    </div>
+
+    <!-- 主内容区 -->
+    <main class="main" id="main-content">
+      <!-- 单词卡片 -->
+      <div class="word-card fade-in" id="word-card">
+        <!-- 配图 -->
+        <div class="word-card__image" id="word-image">
+          <img src="" alt="单词配图" id="word-image-img">
+        </div>
+        
+        <!-- 单词信息 -->
+        <div class="word-card__word" id="word-text">loading...</div>
+        <div class="word-card__phonetic">
+          <span id="word-phonetic">/ˈloʊdɪŋ/</span>
+          <button class="word-card__audio-btn" id="btn-audio" aria-label="播放发音">
+            🔊
+          </button>
+        </div>
+        
+        <!-- 例句（答对后显示） -->
+        <div class="word-card__sentence" id="sentence-box">
+          <div class="word-card__sentence-header">
+            <span class="word-card__sentence-label">📝 例句</span>
+            <button class="word-card__sentence-audio" id="btn-sentence-audio" aria-label="朗读例句">
+              🔊
+            </button>
+          </div>
+          <div class="word-card__sentence-en" id="sentence-en"></div>
+          <div class="word-card__sentence-cn" id="sentence-cn"></div>
+        </div>
+      </div>
+
+      <!-- 四选一选项 -->
+      <div class="options-grid" id="options-grid">
+        <button class="option" data-index="0"></button>
+        <button class="option" data-index="1"></button>
+        <button class="option" data-index="2"></button>
+        <button class="option" data-index="3"></button>
+      </div>
+
+      <!-- 继续按钮（答对或答错时显示） -->
+      <button class="btn btn--primary" id="btn-continue" style="display: none; margin-top: 16px;">
+        下一个 →
+      </button>
+    </main>
+
+    <!-- 底部统计 -->
+    <div class="bottom-stats">
+      <div class="bottom-stats__item">
+        <span>今日已学:</span>
+        <span class="bottom-stats__value" id="today-learned">0</span>
+        <span>词</span>
+      </div>
+      <div class="bottom-stats__item">
+        <span>目标:</span>
+        <span class="bottom-stats__value" id="daily-goal">20</span>
+        <span>词</span>
+      </div>
+    </div>
+
+    <!-- 完成提示（今日目标完成时显示） -->
+    <div class="complete-overlay" id="complete-overlay" style="display: none;">
+      <div class="complete-page">
+        <div class="complete-page__icon">🎉</div>
+        <div class="complete-page__title">太棒了!</div>
+        <div class="complete-page__subtitle" id="complete-message">今日学习目标已完成</div>
+        <div class="complete-page__stats">
+          <div class="complete-page__stat">
+            <div class="complete-page__stat-value" id="complete-learned">20</div>
+            <div class="complete-page__stat-label">今日新学</div>
+          </div>
+          <div class="complete-page__stat">
+            <div class="complete-page__stat-value" id="complete-accuracy">95%</div>
+            <div class="complete-page__stat-label">正确率</div>
+          </div>
+        </div>
+        <button class="btn btn--primary" id="btn-back-home" style="margin-top: 24px;">
+          返回首页
+        </button>
+        <button class="btn btn--secondary" id="btn-continue-learn" style="margin-top: 12px;">
+          继续学习
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 反馈提示 -->
+  <div class="feedback" id="feedback">
+    <span id="feedback-icon"></span>
+    <span id="feedback-text"></span>
+  </div>
+
+  <!-- 脚本 -->
+  <script src="./js/storage.js"></script>
+  <script src="./js/vocabulary.js"></script>
+  <script src="./js/audio.js"></script>
+  <script src="./js/learn.js"></script>
+</body>
+</html>
+
