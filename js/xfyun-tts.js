@@ -247,7 +247,7 @@ const XfyunTTS = {
     
     console.log('[讯飞TTS] 播放音频，大小:', audioBase64.length, '字符');
     
-    var audio = new Audio(audioUrl);
+    var audio = new window.Audio(audioUrl);
     
     audio.onended = function() {
       console.log('[讯飞TTS] 播放完成');
