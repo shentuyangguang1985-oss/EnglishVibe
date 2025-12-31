@@ -60,6 +60,8 @@ const XfyunTTS = {
                            'GET ' + path + ' HTTP/1.1';
     
     console.log('[讯飞TTS] 签名原文:', JSON.stringify(signatureOrigin));
+    console.log('[讯飞TTS] API Secret长度:', this.config.apiSecret ? this.config.apiSecret.length : 0);
+    console.log('[讯飞TTS] API Secret前4位:', this.config.apiSecret ? this.config.apiSecret.substring(0, 4) : 'N/A');
     
     // 3. 使用 HMAC-SHA256 算法，以 api_secret 为密钥对签名原文进行签名
     const signatureSha = CryptoJS.HmacSHA256(signatureOrigin, this.config.apiSecret);
