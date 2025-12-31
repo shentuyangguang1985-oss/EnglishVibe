@@ -102,21 +102,31 @@ const Review = {
   },
 
   /**
+   * 安全添加事件监听器（兼容旧浏览器）
+   */
+  addEvent(id, event, handler) {
+    var el = document.getElementById(id);
+    if (el) {
+      el.addEventListener(event, handler);
+    }
+  },
+
+  /**
    * 绑定基础事件（即使没有复习单词也需要绑定）
    */
   bindBasicEvents() {
     // 返回按钮
-    document.getElementById('btn-back')?.addEventListener('click', () => {
+    this.addEvent('btn-back', 'click', function() {
       window.location.href = './index.html';
     });
     
     // 返回首页（完成页面）
-    document.getElementById('btn-back-home')?.addEventListener('click', () => {
+    this.addEvent('btn-back-home', 'click', function() {
       window.location.href = './index.html';
     });
 
     // 暂停按钮
-    document.getElementById('btn-pause')?.addEventListener('click', () => {
+    this.addEvent('btn-pause', 'click', function() {
       window.location.href = './index.html';
     });
   },
@@ -125,37 +135,35 @@ const Review = {
    * 绑定事件
    */
   bindEvents() {
+    var self = this;
+    
     // 发音按钮
-    document.getElementById('btn-audio')?.addEventListener('click', () => {
-      if (this.state.currentWord) {
-        Audio.speak(this.state.currentWord.word);
+    this.addEvent('btn-audio', 'click', function() {
+      if (self.state.currentWord) {
+        Audio.speak(self.state.currentWord.word);
       }
     });
     
-    // 例句朗读按钮（使用有道翻译TTS，对句子发音更清晰）
-    document.getElementById('btn-sentence-audio')?.addEventListener('click', () => {
-      if (this.state.currentWord && this.state.currentWord.sentence) {
-        // 先停止当前正在播放的单词音频
+    // 例句朗读按钮
+    this.addEvent('btn-sentence-audio', 'click', function() {
+      if (self.state.currentWord && self.state.currentWord.sentence) {
         Audio.stop();
-        
-        const sentence = this.state.currentWord.sentence;
-        
-        // 使用专门的例句发音方法
+        var sentence = self.state.currentWord.sentence;
         Audio.speakSentence(sentence);
       }
     });
     
     // 选项点击
-    const options = document.querySelectorAll('.option');
-    options.forEach((option, index) => {
-      option.addEventListener('click', () => {
-        this.handleOptionClick(index);
+    var options = document.querySelectorAll('.option');
+    options.forEach(function(option, index) {
+      option.addEventListener('click', function() {
+        self.handleOptionClick(index);
       });
     });
     
     // 继续按钮
-    document.getElementById('btn-continue')?.addEventListener('click', () => {
-      this.nextWord();
+    this.addEvent('btn-continue', 'click', function() {
+      self.nextWord();
     });
   },
 

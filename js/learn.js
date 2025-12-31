@@ -93,51 +93,63 @@ const Learn = {
   },
 
   /**
+   * 安全添加事件监听器（兼容旧浏览器）
+   */
+  addEvent(id, event, handler) {
+    var el = document.getElementById(id);
+    if (el) {
+      el.addEventListener(event, handler);
+    }
+  },
+
+  /**
    * 绑定事件
    */
   bindEvents() {
+    var self = this;
+    
     // 返回按钮
-    document.getElementById('btn-back')?.addEventListener('click', () => {
-      this.goBack();
+    this.addEvent('btn-back', 'click', function() {
+      self.goBack();
     });
     
     // 发音按钮
-    document.getElementById('btn-audio')?.addEventListener('click', () => {
-      this.playCurrentWord();
+    this.addEvent('btn-audio', 'click', function() {
+      self.playCurrentWord();
     });
     
     // 例句朗读按钮
-    document.getElementById('btn-sentence-audio')?.addEventListener('click', () => {
-      this.playSentence();
+    this.addEvent('btn-sentence-audio', 'click', function() {
+      self.playSentence();
     });
     
     // 选项点击
-    const options = document.querySelectorAll('.option');
-    options.forEach((option, index) => {
-      option.addEventListener('click', () => {
-        this.handleOptionClick(index);
+    var options = document.querySelectorAll('.option');
+    options.forEach(function(option, index) {
+      option.addEventListener('click', function() {
+        self.handleOptionClick(index);
       });
     });
     
     // 继续按钮
-    document.getElementById('btn-continue')?.addEventListener('click', () => {
-      this.nextWord();
+    this.addEvent('btn-continue', 'click', function() {
+      self.nextWord();
     });
     
     // 返回首页按钮
-    document.getElementById('btn-back-home')?.addEventListener('click', () => {
+    this.addEvent('btn-back-home', 'click', function() {
       window.location.href = './index.html';
     });
     
     // 继续学习按钮（忽略今日目标，继续学习更多）
-    document.getElementById('btn-continue-learn')?.addEventListener('click', () => {
+    this.addEvent('btn-continue-learn', 'click', function() {
       document.getElementById('complete-overlay').style.display = 'none';
-      this.continueExtraLearning();
+      self.continueExtraLearning();
     });
 
     // 暂停按钮
-    document.getElementById('btn-pause')?.addEventListener('click', () => {
-      this.goBack();
+    this.addEvent('btn-pause', 'click', function() {
+      self.goBack();
     });
   },
 
