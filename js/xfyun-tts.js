@@ -249,12 +249,18 @@ const XfyunTTS = {
       for (var i = 0; i < this.audioData.length; i++) {
         var chunk = this.audioData[i];
         try {
-          var binaryString = atob(chunk);
+          // 清理Base64字符串：移除空格、换行等非法字符
+          var cleanChunk = chunk.replace(/[\s\r\n]/g, '');
+          // 确保长度是4的倍数（Base64要求）
+          while (cleanChunk.length % 4 !== 0) {
+            cleanChunk += '=';
+          }
+          var binaryString = atob(cleanChunk);
           for (var j = 0; j < binaryString.length; j++) {
             allBytes.push(binaryString.charCodeAt(j));
           }
         } catch (e) {
-          console.warn('[讯飞TTS] 片段', i, '解码失败:', e);
+          console.warn('[讯飞TTS] 片段', i, '解码失败:', e, '原始长度:', chunk.length);
         }
       }
       
