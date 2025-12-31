@@ -243,29 +243,47 @@ const XfyunTTS = {
     }
     
     // 合并所有音频片段
-    const audioBase64 = this.audioData.join('');
-    const audioUrl = 'data:audio/mp3;base64,' + audioBase64;
-    
+    var audioBase64 = this.audioData.join('');
     console.log('[讯飞TTS] 播放音频，大小:', audioBase64.length, '字符');
     
-    var audio = new window.Audio(audioUrl);
-    
-    audio.onended = function() {
-      console.log('[讯飞TTS] 播放完成');
-      if (self.onEnd) self.onEnd();
-    };
-    
-    audio.onerror = function(e) {
-      console.error('[讯飞TTS] 播放错误:', e);
+    try {
+      // 将Base64转换为Blob（更好的浏览器兼容性）
+      var binaryString = atob(audioBase64);
+      var bytes = new Uint8Array(binaryString.length);
+      for (var i = 0; i < binaryString.length; i++) {
+        bytes[i] = binaryString.charCodeAt(i);
+      }
+      var blob = new Blob([bytes], { type: 'audio/mp3' });
+      var audioUrl = URL.createObjectURL(blob);
+      
+      console.log('[讯飞TTS] 创建Blob URL:', audioUrl);
+      
+      var audio = new window.Audio(audioUrl);
+      
+      audio.onended = function() {
+        console.log('[讯飞TTS] 播放完成');
+        URL.revokeObjectURL(audioUrl);  // 释放内存
+        if (self.onEnd) self.onEnd();
+      };
+      
+      audio.onerror = function(e) {
+        console.error('[讯飞TTS] 播放错误:', e);
+        URL.revokeObjectURL(audioUrl);
+        if (self.onError) self.onError(e);
+      };
+      
+      audio.play().then(function() {
+        console.log('[讯飞TTS] 开始播放');
+      }).catch(function(e) {
+        console.error('[讯飞TTS] 播放失败:', e);
+        URL.revokeObjectURL(audioUrl);
+        if (self.onError) self.onError(e);
+      });
+      
+    } catch (e) {
+      console.error('[讯飞TTS] 音频处理异常:', e);
       if (self.onError) self.onError(e);
-    };
-    
-    audio.play().then(function() {
-      console.log('[讯飞TTS] 开始播放');
-    }).catch(function(e) {
-      console.error('[讯飞TTS] 播放失败:', e);
-      if (self.onError) self.onError(e);
-    });
+    }
   },
 
   /**
