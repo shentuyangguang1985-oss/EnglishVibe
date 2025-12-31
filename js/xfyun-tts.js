@@ -46,23 +46,34 @@ const XfyunTTS = {
    * 生成鉴权URL
    */
   getAuthUrl() {
-    const host = 'tts-api.xfyun.cn';
-    const path = '/v2/tts';
-    const date = new Date().toUTCString();
+    var host = 'tts-api.xfyun.cn';
+    var path = '/v2/tts';
+    var date = new Date().toUTCString();
     
-    // 构建签名原文
-    const signatureOrigin = `host: ${host}\ndate: ${date}\nGET ${path} HTTP/1.1`;
+    // 构建签名原文（注意：每行末尾没有空格）
+    var signatureOrigin = 'host: ' + host + '\n' + 'date: ' + date + '\n' + 'GET ' + path + ' HTTP/1.1';
+    
+    console.log('签名原文:', signatureOrigin);
+    console.log('API Secret:', this.config.apiSecret);
     
     // HMAC-SHA256签名
-    const signatureSha = CryptoJS.HmacSHA256(signatureOrigin, this.config.apiSecret);
-    const signature = CryptoJS.enc.Base64.stringify(signatureSha);
+    var signatureSha = CryptoJS.HmacSHA256(signatureOrigin, this.config.apiSecret);
+    var signature = CryptoJS.enc.Base64.stringify(signatureSha);
     
-    // 构建authorization
-    const authorizationOrigin = `api_key="${this.config.apiKey}", algorithm="hmac-sha256", headers="host date request-line", signature="${signature}"`;
-    const authorization = btoa(authorizationOrigin);
+    console.log('签名结果:', signature);
+    
+    // 构建authorization（使用单引号避免问题）
+    var authorizationOrigin = 'api_key="' + this.config.apiKey + '", algorithm="hmac-sha256", headers="host date request-line", signature="' + signature + '"';
+    
+    console.log('Authorization原文:', authorizationOrigin);
+    
+    // Base64编码
+    var authorization = btoa(authorizationOrigin);
     
     // 构建完整URL
-    const url = `wss://${host}${path}?authorization=${authorization}&date=${encodeURIComponent(date)}&host=${host}`;
+    var url = 'wss://' + host + path + '?authorization=' + authorization + '&date=' + encodeURIComponent(date) + '&host=' + host;
+    
+    console.log('完整URL:', url);
     
     return url;
   },
