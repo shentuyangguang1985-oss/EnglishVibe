@@ -162,7 +162,7 @@ const XfyunTTS = {
       business: {
         aue: 'lame',        // MP3格式
         auf: 'audio/L16;rate=16000',  // 音频采样率
-        vcn: 'x4_luna',     // Luna英语发音人（尝试x4前缀）
+        vcn: 'x4_enus_luna_assist',  // Luna英语女声（正确参数）
         speed: 50,          // 语速
         volume: 100,        // 音量最大
         pitch: 50,          // 音高
