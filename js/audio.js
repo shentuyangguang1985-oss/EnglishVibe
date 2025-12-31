@@ -360,15 +360,12 @@ const Audio = {
     options = options || {};
     var self = this;
     
-    // 将句子拆分成2个词一组的片段（有道API对2词支持最好）
-    var words = sentence.split(' ');
-    var chunks = [];
-    var chunkSize = 2; // 每组2个词
-    
-    for (var i = 0; i < words.length; i += chunkSize) {
-      var chunk = words.slice(i, i + chunkSize).join(' ');
-      chunks.push(chunk);
-    }
+    // 逐词播放（有道API对单个词最稳定）
+    var words = sentence.split(' ').filter(function(w) { return w.length > 0; });
+    // 清理每个词的标点符号
+    var chunks = words.map(function(w) {
+      return w.replace(/[.,!?;:'"]/g, '');
+    }).filter(function(w) { return w.length > 0; });
     
     console.log('Sentence chunks:', chunks);
     
@@ -386,9 +383,9 @@ const Audio = {
         return;
       }
       
-      var chunk = chunks[currentChunk];
-      var url = 'https://dict.youdao.com/dictvoice?audio=' + encodeURIComponent(chunk) + '&type=2';
-      console.log('Playing chunk ' + (currentChunk + 1) + '/' + chunks.length + ':', chunk);
+      var word = chunks[currentChunk];
+      var url = 'https://dict.youdao.com/dictvoice?audio=' + encodeURIComponent(word) + '&type=2';
+      console.log('Playing word ' + (currentChunk + 1) + '/' + chunks.length + ':', word);
       
       try {
         self.currentAudio = new window.Audio(url);
@@ -396,26 +393,26 @@ const Audio = {
         
         self.currentAudio.onended = function() {
           currentChunk++;
-          // 短暂延迟后播放下一段
-          setTimeout(playNextChunk, 100);
+          // 短暂延迟后播放下一个词（50ms更流畅）
+          setTimeout(playNextChunk, 50);
         };
         
         self.currentAudio.onerror = function(e) {
-          console.warn('Chunk play error:', e);
+          console.warn('Word play error:', e);
           currentChunk++;
-          // 跳过失败的片段，继续下一个
-          setTimeout(playNextChunk, 100);
+          // 跳过失败的词，继续下一个
+          setTimeout(playNextChunk, 50);
         };
         
         self.currentAudio.play().catch(function(e) {
-          console.warn('Chunk play failed:', e);
+          console.warn('Word play failed:', e);
           currentChunk++;
-          setTimeout(playNextChunk, 100);
+          setTimeout(playNextChunk, 50);
         });
       } catch (e) {
-        console.warn('Chunk exception:', e);
+        console.warn('Word exception:', e);
         currentChunk++;
-        setTimeout(playNextChunk, 100);
+        setTimeout(playNextChunk, 50);
       }
     };
     
