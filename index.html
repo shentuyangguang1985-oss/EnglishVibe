@@ -106,6 +106,12 @@
           开始复习
           <span class="btn__badge" id="review-badge">0</span>
         </button>
+        
+        <!-- 安装到桌面按钮 -->
+        <button class="btn btn--secondary" id="btn-install" style="border: 2px dashed var(--secondary);">
+          <span class="btn__icon">📲</span>
+          安装到桌面
+        </button>
       </div>
     </main>
 
@@ -168,49 +174,58 @@
       // 阻止默认提示
       e.preventDefault();
       deferredPrompt = e;
-      
-      // 显示自定义安装按钮（可选）
-      showInstallButton();
+      console.log('PWA install prompt ready');
     });
     
-    function showInstallButton() {
-      // 创建安装按钮（如果首页没有待复习词）
-      const btnReview = document.getElementById('btn-review');
-      if (btnReview && btnReview.style.display === 'none') {
-        const installBtn = document.createElement('button');
-        installBtn.className = 'btn btn--secondary';
-        installBtn.innerHTML = '<span class="btn__icon">📲</span> 安装到桌面';
-        installBtn.style.marginTop = '8px';
-        installBtn.onclick = installApp;
-        
-        const actionButtons = document.querySelector('.action-buttons');
-        if (actionButtons && !document.getElementById('btn-install')) {
-          installBtn.id = 'btn-install';
-          actionButtons.appendChild(installBtn);
-        }
+    // 绑定安装按钮事件
+    document.addEventListener('DOMContentLoaded', () => {
+      const installBtn = document.getElementById('btn-install');
+      if (installBtn) {
+        installBtn.addEventListener('click', installApp);
       }
-    }
+      
+      // 检查是否已安装（standalone模式）
+      if (window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone) {
+        // 已安装，隐藏按钮
+        if (installBtn) installBtn.style.display = 'none';
+      }
+    });
     
     async function installApp() {
-      if (!deferredPrompt) return;
-      
-      deferredPrompt.prompt();
-      const { outcome } = await deferredPrompt.userChoice;
-      
-      if (outcome === 'accepted') {
-        console.log('User accepted the install prompt');
+      if (deferredPrompt) {
+        // 浏览器支持安装提示
+        deferredPrompt.prompt();
+        const { outcome } = await deferredPrompt.userChoice;
+        
+        if (outcome === 'accepted') {
+          console.log('User accepted the install prompt');
+          const installBtn = document.getElementById('btn-install');
+          if (installBtn) installBtn.style.display = 'none';
+        }
+        deferredPrompt = null;
+      } else {
+        // 浏览器不支持自动安装提示，显示手动安装说明
+        const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+        const isAndroid = /Android/.test(navigator.userAgent);
+        
+        let message = '📲 安装到桌面：\n\n';
+        if (isIOS) {
+          message += '1. 点击底部的分享按钮 ⬆️\n2. 选择"添加到主屏幕"';
+        } else if (isAndroid) {
+          message += '1. 点击右上角菜单 ⋮\n2. 选择"添加到主屏幕"或"安装应用"';
+        } else {
+          message += '请使用浏览器菜单中的"安装"或"添加到主屏幕"选项';
+        }
+        alert(message);
       }
-      deferredPrompt = null;
-      
-      // 隐藏安装按钮
-      const installBtn = document.getElementById('btn-install');
-      if (installBtn) installBtn.remove();
     }
     
     // 监听安装完成
     window.addEventListener('appinstalled', () => {
       console.log('PWA was installed');
       deferredPrompt = null;
+      const installBtn = document.getElementById('btn-install');
+      if (installBtn) installBtn.style.display = 'none';
     });
   </script>
 </body>
