@@ -868,6 +868,88 @@ body {
 /* ============================================
    响应式适配
    ============================================ */
+
+/* 小屏手机适配（高度不足时） */
+@media (max-height: 750px) {
+  .word-card {
+    padding: var(--spacing-md);
+  }
+  
+  .word-card__image {
+    height: 140px;
+    margin-bottom: var(--spacing-md);
+  }
+  
+  .word-card__word {
+    font-size: var(--font-size-2xl);
+    margin-bottom: var(--spacing-xs);
+  }
+  
+  .word-card__phonetic {
+    font-size: var(--font-size-md);
+    margin-bottom: var(--spacing-sm);
+  }
+  
+  .word-card__sentence {
+    padding: var(--spacing-sm);
+    margin-top: var(--spacing-md);
+  }
+  
+  .options-grid {
+    gap: var(--spacing-sm);
+    margin-top: var(--spacing-md);
+  }
+  
+  .option {
+    padding: var(--spacing-sm);
+    min-height: 50px;
+    font-size: var(--font-size-sm);
+  }
+  
+  .main {
+    padding: var(--spacing-md);
+    gap: var(--spacing-md);
+  }
+  
+  .header {
+    padding: var(--spacing-sm) var(--spacing-md);
+  }
+}
+
+/* 更小屏幕手机 */
+@media (max-height: 650px) {
+  .word-card__image {
+    height: 120px;
+    margin-bottom: var(--spacing-sm);
+  }
+  
+  .word-card__word {
+    font-size: var(--font-size-xl);
+  }
+  
+  .word-card__phonetic {
+    font-size: var(--font-size-sm);
+  }
+  
+  .word-card__sentence {
+    padding: var(--spacing-xs) var(--spacing-sm);
+  }
+  
+  .word-card__sentence-en {
+    font-size: var(--font-size-sm);
+  }
+  
+  .word-card__sentence-cn {
+    font-size: var(--font-size-xs);
+  }
+  
+  .option {
+    min-height: 44px;
+    padding: var(--spacing-xs) var(--spacing-sm);
+  }
+}
+
+/* 宽度适配 */
 @media (max-width: 400px) {
   :root {
     --font-size-3xl: 36px;
