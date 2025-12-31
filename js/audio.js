@@ -36,7 +36,9 @@ const Audio = {
    * @private
    */
   _playOnce(word, options, totalRepeat) {
+    console.log('_playOnce called with word:', word);
     var self = this;
+    options = options || {};
     var accent = options.accent || this.accent;
     
     // 有道词典发音接口
