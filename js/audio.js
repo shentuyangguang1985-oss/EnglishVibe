@@ -186,22 +186,55 @@ const Audio = {
   },
 
   /**
-   * 播放句子发音（使用有道词典API，和单词发音完全一样）
+   * 播放句子发音（使用有道翻译API，对句子支持更好）
    * @param {string} sentence - 要发音的句子
    * @param {Object} options - 配置选项
    */
   speakSentence(sentence, options) {
     console.log('Audio.speakSentence called with:', sentence);
     options = options || {};
+    var self = this;
     
     // 停止当前播放
     this.stop();
     
-    // 重置计数，只播放1遍
-    this.repeatCount = 0;
+    // 使用有道翻译TTS API（对句子支持更好）
+    var url = 'https://tts.youdao.com/fanyivoice?word=' + encodeURIComponent(sentence) + '&le=eng&keyfrom=speaker-target';
+    console.log('Sentence audio URL:', url);
     
-    // 使用和单词完全相同的方法播放
-    this._playOnce(sentence, options, 1);
+    try {
+      this.currentAudio = new window.Audio(url);
+      this.currentAudio.volume = options.volume || 1;
+      
+      this.currentAudio.onended = function() {
+        console.log('Sentence audio ended');
+        if (options.onEnd) options.onEnd();
+      };
+      
+      this.currentAudio.onerror = function(e) {
+        console.error('Sentence audio error:', e);
+        // 备用方案：使用 Web Speech API
+        console.log('Trying Web Speech API for sentence...');
+        self.speakWithSpeechAPI(sentence, { volume: 1, repeat: 1 });
+      };
+      
+      this.currentAudio.oncanplay = function() {
+        console.log('Sentence audio can play');
+      };
+      
+      var playPromise = this.currentAudio.play();
+      if (playPromise !== undefined) {
+        playPromise.then(function() {
+          console.log('Sentence audio playing!');
+        }).catch(function(e) {
+          console.warn('Sentence audio play failed:', e);
+          self.speakWithSpeechAPI(sentence, { volume: 1, repeat: 1 });
+        });
+      }
+    } catch (e) {
+      console.error('Sentence audio exception:', e);
+      this.speakWithSpeechAPI(sentence, { volume: 1, repeat: 1 });
+    }
   },
 
   /**
