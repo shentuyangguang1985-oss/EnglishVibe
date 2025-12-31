@@ -74,12 +74,16 @@ const Audio = {
       
       var playPromise = this.currentAudio.play();
       if (playPromise !== undefined) {
-        playPromise.catch(function(e) {
+        playPromise.then(function() {
+          console.log('Audio playing successfully!');
+        }).catch(function(e) {
           console.warn('Audio play failed:', e);
           // 备用方案
           var backupOptions = { volume: options.volume, repeat: totalRepeat - self.repeatCount };
           self.speakWithSpeechAPI(word, backupOptions);
         });
+      } else {
+        console.log('Audio play returned undefined (older browser)');
       }
       
     } catch (e) {
