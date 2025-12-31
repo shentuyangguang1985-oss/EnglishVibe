@@ -3,7 +3,7 @@
  * 实现PWA离线缓存功能
  */
 
-const CACHE_NAME = 'englishvibe-v7';
+const CACHE_NAME = 'englishvibe-v8';
 
 // 需要缓存的静态资源
 const STATIC_ASSETS = [

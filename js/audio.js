@@ -165,7 +165,10 @@ const Audio = {
    * @param {string} sentence - 要发音的句子
    * @param {Object} options - 配置选项
    */
-  speakSentence(sentence, options = {}) {
+  speakSentence(sentence, options) {
+    console.log('Audio.speakSentence called with:', sentence);
+    options = options || {};
+    
     // 停止当前播放
     this.stop();
     

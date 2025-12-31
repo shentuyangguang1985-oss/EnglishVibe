@@ -371,14 +371,19 @@ const Learn = {
    * 播放例句发音（使用有道翻译TTS，对句子发音更清晰）
    */
   playSentence() {
+    console.log('playSentence called, currentWord:', this.state.currentWord);
+    
     if (this.state.currentWord && this.state.currentWord.sentence) {
       // 先停止当前正在播放的单词音频
       Audio.stop();
       
-      const sentence = this.state.currentWord.sentence;
+      var sentence = this.state.currentWord.sentence;
+      console.log('Playing sentence:', sentence);
       
       // 使用专门的例句发音方法（有道翻译TTS）
       Audio.speakSentence(sentence);
+    } else {
+      console.log('No sentence to play');
     }
   },
 
