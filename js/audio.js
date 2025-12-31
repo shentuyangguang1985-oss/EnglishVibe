@@ -13,6 +13,10 @@ const Audio = {
   // 重复播放计数
   repeatCount: 0,
   repeatTarget: 2,  // 默认读2遍
+  
+  // 例句播放状态（防抖）
+  sentencePlayingId: 0,
+  lastSentenceTime: 0,
 
   /**
    * 播放单词发音（使用有道词典API）
@@ -230,6 +234,18 @@ const Audio = {
     options = options || {};
     var self = this;
     
+    // 防抖：300ms内的重复调用忽略
+    var now = Date.now();
+    if (now - this.lastSentenceTime < 300) {
+      console.log('Sentence debounced, ignoring...');
+      return;
+    }
+    this.lastSentenceTime = now;
+    
+    // 生成唯一ID，用于检测是否被新调用覆盖
+    this.sentencePlayingId++;
+    var currentId = this.sentencePlayingId;
+    
     // 停止当前播放
     this.stop();
     
@@ -237,13 +253,13 @@ const Audio = {
     var cleanSentence = sentence.replace(/['']/g, "'").replace(/[""]/g, '"');
     
     // 直接使用Web Speech API播放句子（更稳定）
-    this.speakSentenceWithSpeechAPI(cleanSentence, options);
+    this.speakSentenceWithSpeechAPI(cleanSentence, options, currentId);
   },
   
   /**
    * 使用Web Speech API播放句子（专门优化）
    */
-  speakSentenceWithSpeechAPI(sentence, options) {
+  speakSentenceWithSpeechAPI(sentence, options, playId) {
     options = options || {};
     var self = this;
     var synth = window.speechSynthesis;
@@ -259,6 +275,12 @@ const Audio = {
     
     // 等待一小段时间确保取消完成
     setTimeout(function() {
+      // 检查是否已被新调用覆盖
+      if (playId !== self.sentencePlayingId) {
+        console.log('Sentence play superseded, skipping...');
+        return;
+      }
+      
       var utterance = new SpeechSynthesisUtterance(sentence);
       utterance.lang = 'en-US';
       utterance.rate = 0.9;
@@ -314,8 +336,9 @@ const Audio = {
       
       utterance.onerror = function(e) {
         console.warn('Sentence speech error:', e.error);
-        // 如果Web Speech API失败，尝试有道
-        if (e.error !== 'canceled') {
+        // canceled 是正常取消，不需要备用方案
+        // interrupted 也是正常中断
+        if (e.error !== 'canceled' && e.error !== 'interrupted') {
           self.speakSentenceWithYoudao(sentence, options);
         }
       };
