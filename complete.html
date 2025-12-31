@@ -13,15 +13,12 @@
   
   <style>
     .complete-container {
-      min-height: 100vh;
+      height: 100vh;
+      max-height: 100vh;
       display: flex;
       flex-direction: column;
       background: linear-gradient(135deg, #E8F5E9 0%, #C8E6C9 50%, #A5D6A7 100%);
-    }
-    
-    .complete-header {
-      padding: var(--spacing-lg);
-      text-align: center;
+      overflow: hidden;
     }
     
     .complete-content {
@@ -30,79 +27,80 @@
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      padding: var(--spacing-xl);
+      padding: var(--spacing-md);
       text-align: center;
+      overflow-y: auto;
     }
     
     .trophy {
-      font-size: 100px;
-      margin-bottom: var(--spacing-lg);
+      font-size: 64px;
+      margin-bottom: var(--spacing-sm);
       animation: trophy-bounce 1s ease infinite;
     }
     
     @keyframes trophy-bounce {
       0%, 100% { transform: translateY(0) rotate(-5deg); }
-      50% { transform: translateY(-15px) rotate(5deg); }
+      50% { transform: translateY(-8px) rotate(5deg); }
     }
     
     .complete-title {
-      font-size: 32px;
+      font-size: 24px;
       font-weight: 700;
       color: var(--text-primary);
-      margin-bottom: var(--spacing-sm);
+      margin-bottom: 4px;
     }
     
     .complete-subtitle {
-      font-size: var(--font-size-lg);
+      font-size: var(--font-size-md);
       color: var(--text-secondary);
-      margin-bottom: var(--spacing-xl);
+      margin-bottom: var(--spacing-md);
     }
     
     .stats-card {
       background: white;
-      border-radius: var(--radius-xl);
-      padding: var(--spacing-xl);
+      border-radius: var(--radius-lg);
+      padding: var(--spacing-md);
       width: 100%;
-      max-width: 320px;
-      box-shadow: var(--shadow-lg);
-      margin-bottom: var(--spacing-xl);
+      max-width: 300px;
+      box-shadow: var(--shadow-md);
+      margin-bottom: var(--spacing-md);
     }
     
     .stats-card__title {
-      font-size: var(--font-size-sm);
+      font-size: var(--font-size-xs);
       color: var(--text-light);
       text-transform: uppercase;
       letter-spacing: 1px;
-      margin-bottom: var(--spacing-md);
+      margin-bottom: var(--spacing-sm);
     }
     
     .stats-grid {
       display: grid;
       grid-template-columns: repeat(2, 1fr);
-      gap: var(--spacing-md);
+      gap: var(--spacing-sm);
     }
     
     .stat-item {
       text-align: center;
-      padding: var(--spacing-md);
+      padding: var(--spacing-sm);
       background: var(--bg-secondary);
-      border-radius: var(--radius-md);
+      border-radius: var(--radius-sm);
     }
     
     .stat-item__icon {
-      font-size: 24px;
-      margin-bottom: var(--spacing-xs);
+      font-size: 20px;
+      margin-bottom: 2px;
     }
     
     .stat-item__value {
-      font-size: var(--font-size-2xl);
+      font-size: var(--font-size-xl);
       font-weight: 700;
       color: var(--primary);
-      margin-bottom: var(--spacing-xs);
+      margin-bottom: 2px;
     }
     
     .stat-item__label {
-      font-size: var(--font-size-xs);
+      font-size: 10px;
       color: var(--text-secondary);
     }
     
@@ -117,29 +115,26 @@
     }
     
     .motivational-text {
-      font-size: var(--font-size-md);
-      color: var(--text-secondary);
-      margin-bottom: var(--spacing-xl);
-      line-height: 1.6;
+      display: none;
     }
     
     .complete-actions {
       display: flex;
       flex-direction: column;
-      gap: var(--spacing-md);
+      gap: var(--spacing-xs);
       width: 100%;
-      max-width: 320px;
+      max-width: 300px;
+    }
+    
+    .complete-actions .btn {
+      padding: var(--spacing-sm) var(--spacing-md);
+      font-size: var(--font-size-sm);
     }
     
     .btn--success {
       background: linear-gradient(135deg, var(--success), #5a9a6e);
       color: white;
-      box-shadow: 0 4px 16px rgba(124, 184, 143, 0.4);
-    }
-    
-    .btn--success:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 6px 20px rgba(124, 184, 143, 0.5);
+      box-shadow: 0 4px 12px rgba(124, 184, 143, 0.4);
     }
     
     .confetti {
@@ -155,21 +150,38 @@
     
     .confetti-piece {
       position: absolute;
-      width: 10px;
-      height: 10px;
+      width: 8px;
+      height: 8px;
       opacity: 0;
       animation: confetti-fall 3s ease-in-out forwards;
     }
     
     @keyframes confetti-fall {
-      0% {
-        transform: translateY(-100px) rotate(0deg);
-        opacity: 1;
-      }
-      100% {
-        transform: translateY(100vh) rotate(720deg);
-        opacity: 0;
-      }
+      0% { transform: translateY(-100px) rotate(0deg); opacity: 1; }
+      100% { transform: translateY(100vh) rotate(720deg); opacity: 0; }
+    }
+    
+    /* 小屏适配 */
+    @media (max-height: 700px) {
+      .trophy { font-size: 50px; margin-bottom: 4px; }
+      .complete-title { font-size: 20px; }
+      .complete-subtitle { font-size: var(--font-size-sm); margin-bottom: var(--spacing-sm); }
+      .stats-card { padding: var(--spacing-sm); margin-bottom: var(--spacing-sm); }
+      .stats-grid { gap: 4px; }
+      .stat-item { padding: 6px; }
+      .stat-item__icon { font-size: 16px; }
+      .stat-item__value { font-size: var(--font-size-lg); }
+      .complete-actions { gap: 4px; }
+      .complete-actions .btn { padding: 8px var(--spacing-sm); font-size: var(--font-size-xs); min-height: 36px; }
+    }
+    
+    @media (max-height: 600px) {
+      .complete-content { padding: var(--spacing-xs); }
+      .trophy { font-size: 40px; }
+      .complete-title { font-size: 18px; }
+      .stats-card { padding: 6px; }
+      .stat-item__value { font-size: var(--font-size-md); }
+      .stat-item__label { font-size: 9px; }
     }
   </style>
 </head>
@@ -305,9 +317,9 @@
       },
 
       bindEvents() {
-        // 继续学习
+        // 继续学习（添加continue参数，跳过今日目标检查）
         document.getElementById('btn-continue').addEventListener('click', () => {
-          window.location.href = './learn.html';
+          window.location.href = './learn.html?continue=true';
         });
         
         // 开始复习

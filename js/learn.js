@@ -36,6 +36,10 @@ const Learn = {
     console.log('Learn page initializing...');
     
     try {
+      // 检查是否是"继续学习"模式（从complete页面跳转过来）
+      const urlParams = new URLSearchParams(window.location.search);
+      this.state.continueMode = urlParams.get('continue') === 'true';
+      
       // 加载设置和进度
       const settings = Storage.getSettings();
       const progress = Storage.getProgress();
@@ -74,10 +78,17 @@ const Learn = {
   prepareLearnQueue(progress) {
     const totalWords = Vocabulary.getTotalCount();
     const startIndex = progress.currentIndex || 0;
-    const remainingToday = this.state.dailyGoal - this.state.todayLearned;
     
-    // 获取今天要学的单词数量
-    const count = Math.min(remainingToday, totalWords - startIndex, 20);
+    // 继续学习模式：忽略今日目标，继续学习下一批
+    let count;
+    if (this.state.continueMode) {
+      // 继续学习模式，每次加载一个完整的每日目标数量
+      count = Math.min(this.state.dailyGoal, totalWords - startIndex, 20);
+    } else {
+      // 正常模式，检查今日剩余
+      const remainingToday = this.state.dailyGoal - this.state.todayLearned;
+      count = Math.min(remainingToday, totalWords - startIndex, 20);
+    }
     
     if (count <= 0) {
       // 已完成今日目标或学完所有单词
@@ -89,7 +100,7 @@ const Learn = {
     this.state.learnQueue = Vocabulary.getNewWords(startIndex, count);
     this.state.currentIndex = 0;
     
-    console.log(`Prepared ${this.state.learnQueue.length} words for learning`);
+    console.log(`Prepared ${this.state.learnQueue.length} words for learning (continue mode: ${this.state.continueMode})`);
   },
 
   /**
