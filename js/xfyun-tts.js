@@ -162,7 +162,7 @@ const XfyunTTS = {
       business: {
         aue: 'lame',        // MP3格式（浏览器兼容性最好）
         auf: 'audio/L16;rate=16000',  // 音频采样率
-        vcn: 'x2_lindsay',  // 英语女声Lindsay（已开通）
+        vcn: 'lindsay',     // 英语女声Lindsay（特色发音人）
         speed: 50,          // 语速（0-100，50为正常）
         volume: 50,         // 音量（0-100，50为正常）
         pitch: 50,          // 音高（0-100，50为正常）
