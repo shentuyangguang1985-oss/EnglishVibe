@@ -221,7 +221,7 @@ const Audio = {
   },
 
   /**
-   * 播放句子发音（使用有道词典API，与单词发音一致）
+   * 播放句子发音（优先使用Web Speech API，更稳定）
    * @param {string} sentence - 要发音的句子
    * @param {Object} options - 配置选项
    */
@@ -236,71 +236,125 @@ const Audio = {
     // 清理句子中可能导致问题的字符
     var cleanSentence = sentence.replace(/['']/g, "'").replace(/[""]/g, '"');
     
-    // 使用有道词典API
-    var url = 'https://dict.youdao.com/dictvoice?audio=' + encodeURIComponent(cleanSentence) + '&type=2';
-    console.log('Sentence audio URL:', url);
+    // 直接使用Web Speech API播放句子（更稳定）
+    this.speakSentenceWithSpeechAPI(cleanSentence, options);
+  },
+  
+  /**
+   * 使用Web Speech API播放句子（专门优化）
+   */
+  speakSentenceWithSpeechAPI(sentence, options) {
+    options = options || {};
+    var self = this;
+    var synth = window.speechSynthesis;
     
-    var audioLoaded = false;
-    var audioPlayed = false;
-    var fallbackTriggered = false;
+    if (!synth) {
+      console.warn('Speech synthesis not supported, trying Youdao...');
+      this.speakSentenceWithYoudao(sentence, options);
+      return;
+    }
     
-    // 设置超时，如果3秒内没有成功播放就使用备用方案
-    var timeoutId = setTimeout(function() {
-      if (!audioPlayed && !fallbackTriggered) {
-        console.warn('Sentence audio timeout, trying backup...');
-        fallbackTriggered = true;
-        self.speakWithSpeechAPI(cleanSentence, { volume: 1, repeat: 1 });
+    // 完全停止之前的语音
+    synth.cancel();
+    
+    // 等待一小段时间确保取消完成
+    setTimeout(function() {
+      var utterance = new SpeechSynthesisUtterance(sentence);
+      utterance.lang = 'en-US';
+      utterance.rate = 0.9;
+      utterance.pitch = 1;
+      utterance.volume = options.volume || 1;
+      
+      // 获取语音列表
+      var voices = synth.getVoices();
+      console.log('Available voices for sentence:', voices.length);
+      
+      // 尝试找到高质量的英语语音
+      var englishVoice = null;
+      var preferredVoices = ['Samantha', 'Karen', 'Daniel', 'Moira', 'Alex'];
+      
+      for (var i = 0; i < preferredVoices.length; i++) {
+        for (var j = 0; j < voices.length; j++) {
+          if (voices[j].name.indexOf(preferredVoices[i]) !== -1) {
+            englishVoice = voices[j];
+            break;
+          }
+        }
+        if (englishVoice) break;
       }
-    }, 3000);
-    
-    var clearTimeoutAndFallback = function() {
-      clearTimeout(timeoutId);
-      if (!fallbackTriggered) {
-        fallbackTriggered = true;
-        console.log('Trying Web Speech API for sentence...');
-        self.speakWithSpeechAPI(cleanSentence, { volume: 1, repeat: 1 });
+      
+      // 如果没找到首选，找任意英语语音
+      if (!englishVoice) {
+        for (var i = 0; i < voices.length; i++) {
+          if (voices[i].lang === 'en-US' || voices[i].lang === 'en-GB') {
+            englishVoice = voices[i];
+            break;
+          }
+        }
       }
-    };
+      
+      if (!englishVoice) {
+        for (var i = 0; i < voices.length; i++) {
+          if (voices[i].lang.indexOf('en') === 0) {
+            englishVoice = voices[i];
+            break;
+          }
+        }
+      }
+      
+      if (englishVoice) {
+        utterance.voice = englishVoice;
+        console.log('Using voice for sentence:', englishVoice.name);
+      }
+      
+      utterance.onend = function() {
+        console.log('Sentence speech ended');
+        if (options.onEnd) options.onEnd();
+      };
+      
+      utterance.onerror = function(e) {
+        console.warn('Sentence speech error:', e.error);
+        // 如果Web Speech API失败，尝试有道
+        if (e.error !== 'canceled') {
+          self.speakSentenceWithYoudao(sentence, options);
+        }
+      };
+      
+      synth.speak(utterance);
+      console.log('Sentence speech started');
+    }, 100);
+  },
+  
+  /**
+   * 使用有道词典API播放句子（备用）
+   */
+  speakSentenceWithYoudao(sentence, options) {
+    console.log('Trying Youdao for sentence:', sentence);
+    options = options || {};
+    var self = this;
+    
+    var url = 'https://dict.youdao.com/dictvoice?audio=' + encodeURIComponent(sentence) + '&type=2';
+    console.log('Youdao sentence URL:', url);
     
     try {
       this.currentAudio = new window.Audio(url);
       this.currentAudio.volume = options.volume || 1;
       
-      this.currentAudio.onloadeddata = function() {
-        console.log('Sentence audio loaded');
-        audioLoaded = true;
-      };
-      
       this.currentAudio.onended = function() {
-        console.log('Sentence audio ended');
-        clearTimeout(timeoutId);
-        audioPlayed = true;
+        console.log('Youdao sentence ended');
         if (options.onEnd) options.onEnd();
       };
       
       this.currentAudio.onerror = function(e) {
-        console.error('Sentence audio error:', e);
-        clearTimeoutAndFallback();
+        console.warn('Youdao sentence failed:', e);
+        // 静默失败，不再重试
       };
       
-      this.currentAudio.oncanplay = function() {
-        console.log('Sentence audio can play');
-      };
-      
-      var playPromise = this.currentAudio.play();
-      if (playPromise !== undefined) {
-        playPromise.then(function() {
-          console.log('Sentence audio playing!');
-          audioPlayed = true;
-          clearTimeout(timeoutId);
-        }).catch(function(e) {
-          console.warn('Sentence audio play failed:', e);
-          clearTimeoutAndFallback();
-        });
-      }
+      this.currentAudio.play().catch(function(e) {
+        console.warn('Youdao sentence play failed:', e);
+      });
     } catch (e) {
-      console.error('Sentence audio exception:', e);
-      clearTimeoutAndFallback();
+      console.warn('Youdao sentence exception:', e);
     }
   },
 
