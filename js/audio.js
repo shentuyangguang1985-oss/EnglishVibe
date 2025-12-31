@@ -225,7 +225,8 @@ const Audio = {
   },
 
   /**
-   * 播放句子发音（优先使用有道词典API真人发音）
+   * 播放句子发音
+   * 优先使用讯飞TTS（如果已配置），否则使用逐词播放
    * @param {string} sentence - 要发音的句子
    * @param {Object} options - 配置选项
    */
@@ -249,14 +250,35 @@ const Audio = {
     // 停止当前播放
     this.stop();
     
-    // 清理句子：只替换智能引号（有道翻译TTS支持完整句子包括标点）
+    // 清理句子：替换智能引号
     var cleanSentence = sentence
       .replace(/['']/g, "'")
       .replace(/[""]/g, '"');
     
     console.log('Clean sentence:', cleanSentence);
     
-    // 使用有道翻译TTS API（支持长句子）
+    // 检查是否使用讯飞TTS
+    var settings = Storage.getSettings();
+    if (settings.usePremiumTTS && settings.xfyunAppId) {
+      console.log('Using Xfyun TTS...');
+      // 初始化讯飞配置
+      if (typeof XfyunTTS !== 'undefined') {
+        XfyunTTS.init();
+        XfyunTTS.speak(cleanSentence, {
+          onEnd: function() {
+            if (options.onEnd) options.onEnd();
+          },
+          onError: function(e) {
+            console.warn('Xfyun TTS failed, fallback to word-by-word:', e);
+            // 失败时回退到逐词播放
+            self.speakSentenceWithYoudao(cleanSentence, options, currentId);
+          }
+        });
+        return;
+      }
+    }
+    
+    // 使用逐词播放（免费方案）
     this.speakSentenceWithYoudao(cleanSentence, options, currentId);
   },
   

@@ -70,6 +70,48 @@
         </div>
       </div>
 
+      <!-- 语音设置 -->
+      <div class="settings-section">
+        <div class="settings-section__title">🔊 语音设置（讯飞TTS）</div>
+        
+        <div class="settings-item" style="flex-direction: column; align-items: stretch; gap: 8px;">
+          <span class="settings-item__label">讯飞开放平台配置</span>
+          <small style="color: #9BA5B7;">注册地址：<a href="https://www.xfyun.cn/" target="_blank" style="color: #7D93CD;">www.xfyun.cn</a></small>
+        </div>
+        
+        <div class="settings-item" style="flex-direction: column; align-items: stretch; gap: 8px;">
+          <label class="settings-item__label">APPID</label>
+          <input type="text" id="xfyun-appid" class="settings-input" placeholder="请输入讯飞APPID">
+        </div>
+        
+        <div class="settings-item" style="flex-direction: column; align-items: stretch; gap: 8px;">
+          <label class="settings-item__label">API Key</label>
+          <input type="text" id="xfyun-apikey" class="settings-input" placeholder="请输入API Key">
+        </div>
+        
+        <div class="settings-item" style="flex-direction: column; align-items: stretch; gap: 8px;">
+          <label class="settings-item__label">API Secret</label>
+          <input type="password" id="xfyun-apisecret" class="settings-input" placeholder="请输入API Secret">
+        </div>
+        
+        <div class="settings-item">
+          <span class="settings-item__label">启用高品质语音</span>
+          <label class="toggle">
+            <input type="checkbox" id="use-premium-tts">
+            <span class="toggle__slider"></span>
+          </label>
+        </div>
+        
+        <div class="settings-item" style="flex-direction: column; align-items: stretch; gap: 8px;">
+          <button class="btn btn--primary" id="btn-save-tts" style="width: 100%;">
+            💾 保存配置
+          </button>
+          <button class="btn btn--secondary" id="btn-test-tts" style="width: 100%;">
+            🔊 测试语音
+          </button>
+        </div>
+      </div>
+
       <!-- 危险操作 -->
       <div class="settings-section">
         <div class="settings-section__title">数据管理</div>
@@ -161,10 +203,70 @@
       flex: 1;
       padding: 12px;
     }
+    
+    /* 输入框样式 */
+    .settings-input {
+      width: 100%;
+      padding: 12px 16px;
+      border: 2px solid #E8EAF0;
+      border-radius: 12px;
+      font-size: 14px;
+      transition: border-color 0.2s;
+      box-sizing: border-box;
+    }
+    .settings-input:focus {
+      outline: none;
+      border-color: #7D93CD;
+    }
+    
+    /* 开关样式 */
+    .toggle {
+      position: relative;
+      display: inline-block;
+      width: 50px;
+      height: 28px;
+    }
+    .toggle input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+    .toggle__slider {
+      position: absolute;
+      cursor: pointer;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: #E8EAF0;
+      transition: 0.3s;
+      border-radius: 28px;
+    }
+    .toggle__slider:before {
+      position: absolute;
+      content: "";
+      height: 22px;
+      width: 22px;
+      left: 3px;
+      bottom: 3px;
+      background-color: white;
+      transition: 0.3s;
+      border-radius: 50%;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    }
+    .toggle input:checked + .toggle__slider {
+      background-color: #7D93CD;
+    }
+    .toggle input:checked + .toggle__slider:before {
+      transform: translateX(22px);
+    }
   </style>
 
+  <!-- CryptoJS for 讯飞签名 -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
   <script src="./js/storage.js"></script>
   <script src="./js/vocabulary.js"></script>
+  <script src="./js/xfyun-tts.js"></script>
   <script>
     const Settings = {
       async init() {
@@ -180,7 +282,7 @@
         
         // 显示词书
         const bookInfo = Vocabulary.getBookInfo(progress.currentBook);
-        document.getElementById('current-book').textContent = bookInfo?.name || '七年级上册';
+        document.getElementById('current-book').textContent = bookInfo ? bookInfo.name : '初中完整词库';
         
         // 显示统计
         document.getElementById('stat-learned').textContent = (progress.totalStats.totalLearned || 0) + ' 词';
@@ -188,6 +290,12 @@
         document.getElementById('stat-streak').textContent = (progress.totalStats.streakDays || 0) + ' 天';
         document.getElementById('stat-start-date').textContent = progress.totalStats.startDate || '--';
         document.getElementById('vocab-count').textContent = Vocabulary.getTotalCount() + ' 词';
+        
+        // 加载讯飞配置
+        document.getElementById('xfyun-appid').value = settings.xfyunAppId || '';
+        document.getElementById('xfyun-apikey').value = settings.xfyunApiKey || '';
+        document.getElementById('xfyun-apisecret').value = settings.xfyunApiSecret || '';
+        document.getElementById('use-premium-tts').checked = settings.usePremiumTTS || false;
         
         // 绑定事件
         this.bindEvents();
@@ -244,6 +352,57 @@
         // 点击遮罩关闭
         document.querySelector('.confirm-dialog__overlay').addEventListener('click', () => {
           document.getElementById('confirm-dialog').style.display = 'none';
+        });
+
+        // 保存讯飞配置
+        document.getElementById('btn-save-tts').addEventListener('click', () => {
+          const settings = Storage.getSettings();
+          settings.xfyunAppId = document.getElementById('xfyun-appid').value.trim();
+          settings.xfyunApiKey = document.getElementById('xfyun-apikey').value.trim();
+          settings.xfyunApiSecret = document.getElementById('xfyun-apisecret').value.trim();
+          settings.usePremiumTTS = document.getElementById('use-premium-tts').checked;
+          Storage.saveSettings(settings);
+          
+          alert('✅ 配置已保存！');
+        });
+
+        // 测试讯飞语音
+        document.getElementById('btn-test-tts').addEventListener('click', () => {
+          const appId = document.getElementById('xfyun-appid').value.trim();
+          const apiKey = document.getElementById('xfyun-apikey').value.trim();
+          const apiSecret = document.getElementById('xfyun-apisecret').value.trim();
+          
+          if (!appId || !apiKey || !apiSecret) {
+            alert('⚠️ 请先填写完整的讯飞配置');
+            return;
+          }
+          
+          // 临时设置配置
+          XfyunTTS.config.appId = appId;
+          XfyunTTS.config.apiKey = apiKey;
+          XfyunTTS.config.apiSecret = apiSecret;
+          
+          alert('🔊 正在测试语音...');
+          
+          XfyunTTS.speak('Hello, this is a test. Welcome to EnglishVibe!', {
+            onEnd: function() {
+              alert('✅ 语音测试成功！');
+            },
+            onError: function(e) {
+              alert('❌ 语音测试失败：' + (e.message || '未知错误'));
+            }
+          });
+        });
+
+        // 开关变化
+        document.getElementById('use-premium-tts').addEventListener('change', (e) => {
+          if (e.target.checked) {
+            const appId = document.getElementById('xfyun-appid').value.trim();
+            if (!appId) {
+              alert('⚠️ 请先配置讯飞API密钥');
+              e.target.checked = false;
+            }
+          }
         });
       }
     };

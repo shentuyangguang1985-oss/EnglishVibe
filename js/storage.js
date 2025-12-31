@@ -194,7 +194,12 @@ const Storage = {
       dailyGoal: 20,
       autoPlayAudio: true,
       showSentence: true,
-      vibrationEnabled: true
+      vibrationEnabled: true,
+      // 讯飞TTS配置
+      xfyunAppId: '',
+      xfyunApiKey: '',
+      xfyunApiSecret: '',
+      usePremiumTTS: false  // 是否使用付费TTS
     });
   },
 
