@@ -223,7 +223,7 @@ const Vocabulary = {
 
       // 合并所有词库并去重
       const wordMap = new Map();
-      allResults.forEach(wordList => {
+      results.forEach(wordList => {
         if (Array.isArray(wordList)) {
           wordList.forEach(word => {
             // 使用单词本身作为去重键
