@@ -36,23 +36,26 @@ const Audio = {
    * @private
    */
   _playOnce(word, options, totalRepeat) {
-    const accent = options.accent || this.accent;
+    var self = this;
+    var accent = options.accent || this.accent;
     
     // 有道词典发音接口
     // type=1 英式, type=2 美式
-    const type = accent === 'uk' ? 1 : 2;
-    const url = `https://dict.youdao.com/dictvoice?audio=${encodeURIComponent(word)}&type=${type}`;
+    var type = accent === 'uk' ? 1 : 2;
+    var url = 'https://dict.youdao.com/dictvoice?audio=' + encodeURIComponent(word) + '&type=' + type;
+    
+    console.log('_playOnce URL:', url);
     
     try {
       this.currentAudio = new window.Audio(url);
       this.currentAudio.volume = options.volume || 1;
       
-      this.currentAudio.onended = () => {
-        this.repeatCount++;
-        if (this.repeatCount < totalRepeat) {
+      this.currentAudio.onended = function() {
+        self.repeatCount++;
+        if (self.repeatCount < totalRepeat) {
           // 间隔250ms后播放下一遍
-          setTimeout(() => {
-            this._playOnce(word, options, totalRepeat);
+          setTimeout(function() {
+            self._playOnce(word, options, totalRepeat);
           }, 250);
         } else {
           // 全部播放完成
@@ -60,21 +63,27 @@ const Audio = {
         }
       };
       
-      this.currentAudio.onerror = (e) => {
+      this.currentAudio.onerror = function(e) {
         console.warn('Youdao audio failed, trying backup...', e);
         // 备用方案：使用 Web Speech API
-        this.speakWithSpeechAPI(word, { ...options, repeat: totalRepeat - this.repeatCount });
+        var backupOptions = { volume: options.volume, repeat: totalRepeat - self.repeatCount };
+        self.speakWithSpeechAPI(word, backupOptions);
       };
       
-      this.currentAudio.play().catch(e => {
-        console.warn('Audio play failed:', e);
-        // 备用方案
-        this.speakWithSpeechAPI(word, { ...options, repeat: totalRepeat - this.repeatCount });
-      });
+      var playPromise = this.currentAudio.play();
+      if (playPromise !== undefined) {
+        playPromise.catch(function(e) {
+          console.warn('Audio play failed:', e);
+          // 备用方案
+          var backupOptions = { volume: options.volume, repeat: totalRepeat - self.repeatCount };
+          self.speakWithSpeechAPI(word, backupOptions);
+        });
+      }
       
     } catch (e) {
       console.warn('Audio error:', e);
-      this.speakWithSpeechAPI(word, { ...options, repeat: totalRepeat - this.repeatCount });
+      var backupOptions = { volume: options.volume, repeat: totalRepeat - this.repeatCount };
+      this.speakWithSpeechAPI(word, backupOptions);
     }
   },
 
