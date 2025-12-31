@@ -225,7 +225,7 @@ const Audio = {
   },
 
   /**
-   * 播放句子发音（优先使用Web Speech API，更稳定）
+   * 播放句子发音（优先使用有道词典API真人发音）
    * @param {string} sentence - 要发音的句子
    * @param {Object} options - 配置选项
    */
@@ -249,11 +249,16 @@ const Audio = {
     // 停止当前播放
     this.stop();
     
-    // 清理句子中可能导致问题的字符
-    var cleanSentence = sentence.replace(/['']/g, "'").replace(/[""]/g, '"');
+    // 清理句子：替换智能引号，移除末尾标点（有道API对问号等支持不好）
+    var cleanSentence = sentence
+      .replace(/['']/g, "'")
+      .replace(/[""]/g, '"')
+      .replace(/[?!。？！，,\.]+$/g, '');  // 移除末尾标点
     
-    // 直接使用Web Speech API播放句子（更稳定）
-    this.speakSentenceWithSpeechAPI(cleanSentence, options, currentId);
+    console.log('Clean sentence:', cleanSentence);
+    
+    // 优先使用有道词典API（真人发音）
+    this.speakSentenceWithYoudao(cleanSentence, options, currentId);
   },
   
   /**
@@ -349,10 +354,10 @@ const Audio = {
   },
   
   /**
-   * 使用有道词典API播放句子（备用）
+   * 使用有道词典API播放句子（主要方案）
    */
-  speakSentenceWithYoudao(sentence, options) {
-    console.log('Trying Youdao for sentence:', sentence);
+  speakSentenceWithYoudao(sentence, options, playId) {
+    console.log('Playing sentence with Youdao:', sentence);
     options = options || {};
     var self = this;
     
@@ -364,20 +369,38 @@ const Audio = {
       this.currentAudio.volume = options.volume || 1;
       
       this.currentAudio.onended = function() {
-        console.log('Youdao sentence ended');
+        console.log('Youdao sentence ended successfully');
         if (options.onEnd) options.onEnd();
       };
       
       this.currentAudio.onerror = function(e) {
-        console.warn('Youdao sentence failed:', e);
-        // 静默失败，不再重试
+        console.warn('Youdao sentence error:', e);
+        // 有道失败，尝试 Web Speech API 作为备用
+        if (playId === self.sentencePlayingId) {
+          console.log('Trying Web Speech API as backup...');
+          self.speakSentenceWithSpeechAPI(sentence, options, playId);
+        }
       };
       
-      this.currentAudio.play().catch(function(e) {
-        console.warn('Youdao sentence play failed:', e);
-      });
+      var playPromise = this.currentAudio.play();
+      if (playPromise !== undefined) {
+        playPromise.then(function() {
+          console.log('Youdao sentence playing!');
+        }).catch(function(e) {
+          console.warn('Youdao sentence play failed:', e);
+          // 播放失败，尝试 Web Speech API
+          if (playId === self.sentencePlayingId) {
+            console.log('Trying Web Speech API as backup...');
+            self.speakSentenceWithSpeechAPI(sentence, options, playId);
+          }
+        });
+      }
     } catch (e) {
       console.warn('Youdao sentence exception:', e);
+      // 异常，尝试 Web Speech API
+      if (playId === self.sentencePlayingId) {
+        self.speakSentenceWithSpeechAPI(sentence, options, playId);
+      }
     }
   },
 
