@@ -353,54 +353,74 @@ const Audio = {
   },
   
   /**
-   * 使用有道翻译TTS API播放句子（支持长句子）
+   * 使用有道词典API播放句子（拆分成短片段）
    */
   speakSentenceWithYoudao(sentence, options, playId) {
-    console.log('Playing sentence with Youdao TTS:', sentence);
+    console.log('Playing sentence with Youdao (chunked):', sentence);
     options = options || {};
     var self = this;
     
-    // 使用有道翻译TTS API（支持长句子，比词典API更好）
-    var url = 'https://tts.youdao.com/fanyivoice?word=' + encodeURIComponent(sentence) + '&le=eng&keyfrom=speaker-target';
-    console.log('Youdao TTS URL:', url);
+    // 将句子拆分成2-3个词一组的片段
+    var words = sentence.split(' ');
+    var chunks = [];
+    var chunkSize = 3; // 每组3个词
     
-    var fallbackTriggered = false;
+    for (var i = 0; i < words.length; i += chunkSize) {
+      var chunk = words.slice(i, i + chunkSize).join(' ');
+      chunks.push(chunk);
+    }
     
-    var triggerFallback = function() {
-      if (!fallbackTriggered && playId === self.sentencePlayingId) {
-        fallbackTriggered = true;
-        console.log('Trying Web Speech API as backup...');
-        self.speakSentenceWithSpeechAPI(sentence, options, playId);
+    console.log('Sentence chunks:', chunks);
+    
+    var currentChunk = 0;
+    
+    var playNextChunk = function() {
+      if (playId !== self.sentencePlayingId) {
+        console.log('Sentence play superseded');
+        return;
+      }
+      
+      if (currentChunk >= chunks.length) {
+        console.log('All chunks played');
+        if (options.onEnd) options.onEnd();
+        return;
+      }
+      
+      var chunk = chunks[currentChunk];
+      var url = 'https://dict.youdao.com/dictvoice?audio=' + encodeURIComponent(chunk) + '&type=2';
+      console.log('Playing chunk ' + (currentChunk + 1) + '/' + chunks.length + ':', chunk);
+      
+      try {
+        self.currentAudio = new window.Audio(url);
+        self.currentAudio.volume = options.volume || 1;
+        
+        self.currentAudio.onended = function() {
+          currentChunk++;
+          // 短暂延迟后播放下一段
+          setTimeout(playNextChunk, 100);
+        };
+        
+        self.currentAudio.onerror = function(e) {
+          console.warn('Chunk play error:', e);
+          currentChunk++;
+          // 跳过失败的片段，继续下一个
+          setTimeout(playNextChunk, 100);
+        };
+        
+        self.currentAudio.play().catch(function(e) {
+          console.warn('Chunk play failed:', e);
+          currentChunk++;
+          setTimeout(playNextChunk, 100);
+        });
+      } catch (e) {
+        console.warn('Chunk exception:', e);
+        currentChunk++;
+        setTimeout(playNextChunk, 100);
       }
     };
     
-    try {
-      this.currentAudio = new window.Audio(url);
-      this.currentAudio.volume = options.volume || 1;
-      
-      this.currentAudio.onended = function() {
-        console.log('Youdao TTS sentence ended successfully');
-        if (options.onEnd) options.onEnd();
-      };
-      
-      this.currentAudio.onerror = function(e) {
-        console.warn('Youdao TTS error:', e);
-        triggerFallback();
-      };
-      
-      var playPromise = this.currentAudio.play();
-      if (playPromise !== undefined) {
-        playPromise.then(function() {
-          console.log('Youdao TTS playing!');
-        }).catch(function(e) {
-          console.warn('Youdao TTS play failed:', e);
-          triggerFallback();
-        });
-      }
-    } catch (e) {
-      console.warn('Youdao TTS exception:', e);
-      triggerFallback();
-    }
+    // 开始播放第一个片段
+    playNextChunk();
   },
 
   /**
