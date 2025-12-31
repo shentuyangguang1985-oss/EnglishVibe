@@ -3,6 +3,25 @@
  * 负责所有数据的本地持久化
  */
 
+// 简单混淆（反转+Base64），防止密钥明文暴露
+var _XF = (function() {
+  // 解码函数：Base64解码后反转
+  function d(s) {
+    try {
+      return atob(s).split('').reverse().join('');
+    } catch(e) { return ''; }
+  }
+  // 混淆后的值（原始值反转后Base64编码）
+  return {
+    // APPID
+    a: d('ZDVmYjU5MzY='),
+    // API Key  
+    k: d('MWNiNGQ4ZmM0MzY3NTBlNGRkNGEzY2Y0YmJmMWNkMjU='),
+    // API Secret
+    s: d('eWN0WjBRREdNMUltZjJZWTk1SXp6TVd6TTdNbU5UTQ==')
+  };
+})();
+
 const Storage = {
   // 存储键前缀
   PREFIX: 'ev_',
@@ -195,11 +214,11 @@ const Storage = {
       autoPlayAudio: true,
       showSentence: true,
       vibrationEnabled: true,
-      // 讯飞TTS配置
-      xfyunAppId: '',
-      xfyunApiKey: '',
-      xfyunApiSecret: '',
-      usePremiumTTS: false  // 是否使用付费TTS
+      // 讯飞TTS配置（使用混淆后的默认值）
+      xfyunAppId: _XF.a,
+      xfyunApiKey: _XF.k,
+      xfyunApiSecret: _XF.s,
+      usePremiumTTS: true  // 默认启用高品质TTS
     });
   },
 
