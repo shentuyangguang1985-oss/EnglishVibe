@@ -866,134 +866,162 @@ body {
 }
 
 /* ============================================
-   响应式适配
+   响应式适配 - 手机一屏显示优化
    ============================================ */
 
-/* 小屏手机适配（高度不足时） */
+/* 中等手机 (max-height: 750px) */
 @media (max-height: 750px) {
-  .word-card {
-    padding: var(--spacing-md);
-  }
-  
-  .word-card__image {
-    height: 140px;
-    margin-bottom: var(--spacing-md);
-  }
-  
-  .word-card__word {
-    font-size: var(--font-size-2xl);
-    margin-bottom: var(--spacing-xs);
-  }
-  
-  .word-card__phonetic {
-    font-size: var(--font-size-md);
-    margin-bottom: var(--spacing-sm);
-  }
-  
-  .word-card__sentence {
-    padding: var(--spacing-sm);
-    margin-top: var(--spacing-md);
-  }
-  
-  .options-grid {
-    gap: var(--spacing-sm);
-    margin-top: var(--spacing-md);
-  }
-  
-  .option {
-    padding: var(--spacing-sm);
-    min-height: 50px;
-    font-size: var(--font-size-sm);
-  }
-  
   .main {
-    padding: var(--spacing-md);
-    gap: var(--spacing-md);
+    padding: var(--spacing-sm);
+    gap: var(--spacing-sm);
   }
   
   .header {
-    padding: var(--spacing-sm) var(--spacing-md);
+    padding: var(--spacing-xs) var(--spacing-md);
+    min-height: 44px;
   }
   
-  /* 首页任务卡片紧凑 */
+  /* 首页 */
   .task-card {
-    padding: var(--spacing-md);
+    padding: var(--spacing-sm);
   }
   
   .task-card__title {
     font-size: var(--font-size-md);
-    margin-bottom: var(--spacing-md);
-    padding-bottom: var(--spacing-sm);
+    margin-bottom: var(--spacing-sm);
+    padding-bottom: var(--spacing-xs);
   }
+  
+  .task-card__title-icon { font-size: 18px; }
   
   .task-card__stats {
-    gap: var(--spacing-sm);
-    margin-bottom: var(--spacing-md);
-  }
-  
-  .footer-info {
-    padding: var(--spacing-md);
-    font-size: var(--font-size-xs);
-  }
-  
-  .btn {
-    padding: var(--spacing-sm) var(--spacing-md);
-    font-size: var(--font-size-md);
-  }
-  
-  .action-buttons {
-    gap: var(--spacing-sm);
-  }
-}
-
-/* 更小屏幕手机 */
-@media (max-height: 650px) {
-  .word-card__image {
-    height: 120px;
+    gap: var(--spacing-xs);
     margin-bottom: var(--spacing-sm);
   }
   
-  .word-card__word {
-    font-size: var(--font-size-xl);
+  .task-card__stat-label { font-size: var(--font-size-xs); }
+  .task-card__stat-value { font-size: var(--font-size-sm); }
+  
+  .progress-section, .mastered-section {
+    margin-top: var(--spacing-sm);
+    padding-top: var(--spacing-sm);
   }
   
-  .word-card__phonetic {
+  .progress-bar { height: 6px; }
+  .mastered-stat__value { font-size: var(--font-size-md); }
+  
+  .action-buttons {
+    gap: var(--spacing-xs);
+    margin-top: var(--spacing-sm);
+  }
+  
+  .btn {
+    padding: var(--spacing-xs) var(--spacing-md);
     font-size: var(--font-size-sm);
+    min-height: 40px;
   }
   
-  .word-card__sentence {
-    padding: var(--spacing-xs) var(--spacing-sm);
+  .footer-info {
+    padding: var(--spacing-xs) var(--spacing-md);
+    font-size: 11px;
   }
   
-  .word-card__sentence-en {
-    font-size: var(--font-size-sm);
-  }
+  /* 学习页 */
+  .word-card { padding: var(--spacing-sm); }
+  .word-card__image { height: 120px; margin-bottom: var(--spacing-sm); }
+  .word-card__word { font-size: var(--font-size-xl); margin-bottom: 2px; }
+  .word-card__phonetic { font-size: var(--font-size-sm); margin-bottom: var(--spacing-xs); }
+  .word-card__sentence { padding: var(--spacing-xs) var(--spacing-sm); margin-top: var(--spacing-sm); }
+  .word-card__sentence-en { font-size: var(--font-size-sm); }
+  .word-card__sentence-cn { font-size: var(--font-size-xs); }
   
-  .word-card__sentence-cn {
-    font-size: var(--font-size-xs);
-  }
+  .options-grid { gap: var(--spacing-xs); margin-top: var(--spacing-sm); }
+  .option { padding: var(--spacing-xs) var(--spacing-sm); min-height: 44px; font-size: var(--font-size-sm); }
   
-  .option {
-    min-height: 44px;
-    padding: var(--spacing-xs) var(--spacing-sm);
-  }
+  #btn-continue { margin-top: var(--spacing-sm) !important; }
+  
+  /* 弹窗 */
+  .modal__content { padding: var(--spacing-md); }
+  .modal__icon { font-size: 48px; }
+  .modal__title { font-size: var(--font-size-lg); }
+  .stats-summary { padding: var(--spacing-sm); margin: var(--spacing-sm) 0; }
+  .stats-summary__value { font-size: var(--font-size-lg); }
+}
+
+/* 小屏手机 (max-height: 680px) */
+@media (max-height: 680px) {
+  .main { padding: var(--spacing-xs); gap: var(--spacing-xs); }
+  .header { padding: 4px var(--spacing-sm); min-height: 40px; }
+  .header__logo-text { font-size: var(--font-size-md); }
+  
+  /* 首页 */
+  .task-card { padding: var(--spacing-xs) var(--spacing-sm); }
+  .task-card__title { font-size: var(--font-size-sm); margin-bottom: var(--spacing-xs); padding-bottom: 4px; }
+  .task-card__title-icon { font-size: 16px; }
+  .task-card__stats { gap: 4px; margin-bottom: var(--spacing-xs); }
+  .task-card__stat-label { font-size: 10px; }
+  .task-card__stat-value { font-size: var(--font-size-xs); }
+  .progress-section, .mastered-section { margin-top: var(--spacing-xs); padding-top: var(--spacing-xs); }
+  .progress-bar { height: 5px; }
+  .mastered-stat__value { font-size: var(--font-size-sm); }
+  .mastered-stat__label { font-size: 10px; }
+  .action-buttons { gap: 4px; margin-top: var(--spacing-xs); }
+  .btn { padding: 6px var(--spacing-sm); font-size: var(--font-size-xs); min-height: 36px; }
+  .footer-info { padding: 4px var(--spacing-sm); font-size: 10px; }
+  .footer-info small { font-size: 9px; }
+  
+  /* 学习页 */
+  .learn-progress { padding: 2px var(--spacing-sm); }
+  .learn-progress__bar { height: 3px; }
+  .word-card { padding: var(--spacing-xs); }
+  .word-card__image { height: 100px; margin-bottom: var(--spacing-xs); }
+  .word-card__word { font-size: var(--font-size-lg); }
+  .word-card__phonetic { font-size: var(--font-size-xs); }
+  .word-card__sentence { padding: 4px var(--spacing-xs); margin-top: var(--spacing-xs); }
+  .word-card__sentence-en { font-size: var(--font-size-xs); }
+  .word-card__sentence-cn { font-size: 10px; }
+  .options-grid { gap: 4px; margin-top: var(--spacing-xs); }
+  .option { padding: 4px var(--spacing-xs); min-height: 40px; font-size: var(--font-size-xs); }
+  #btn-continue { margin-top: var(--spacing-xs) !important; font-size: var(--font-size-xs); }
+  
+  /* 弹窗 */
+  .modal__content { padding: var(--spacing-sm); }
+  .modal__icon { font-size: 40px; }
+  .modal__title { font-size: var(--font-size-md); margin: var(--spacing-xs) 0; }
+  .modal__message { font-size: var(--font-size-xs); }
+  .stats-summary { padding: var(--spacing-xs); }
+  .stats-summary__value { font-size: var(--font-size-md); }
+}
+
+/* 超小屏手机 (max-height: 600px) */
+@media (max-height: 600px) {
+  .main { padding: 4px; }
+  .header { padding: 2px var(--spacing-xs); min-height: 36px; }
+  
+  /* 首页极限压缩 */
+  .task-card { padding: 6px; }
+  .task-card__title { font-size: 12px; margin-bottom: 4px; }
+  .task-card__stats { margin-bottom: 4px; }
+  .progress-section, .mastered-section { margin-top: 4px; padding-top: 4px; }
+  .action-buttons { margin-top: 4px; }
+  .btn { padding: 4px var(--spacing-xs); font-size: 11px; min-height: 32px; }
+  .footer-info { padding: 2px; font-size: 9px; }
+  
+  /* 学习页极限压缩 */
+  .word-card__image { height: 80px; }
+  .word-card__word { font-size: var(--font-size-md); }
+  .option { min-height: 36px; font-size: 11px; }
 }
 
 /* 宽度适配 */
 @media (max-width: 400px) {
   :root {
-    --font-size-3xl: 36px;
-    --font-size-2xl: 28px;
+    --font-size-3xl: 32px;
+    --font-size-2xl: 24px;
+    --font-size-xl: 20px;
   }
-  
-  .options-grid {
-    gap: var(--spacing-sm);
-  }
-  
-  .option {
-    padding: var(--spacing-sm);
-    font-size: var(--font-size-sm);
-  }
+  .options-grid { gap: var(--spacing-xs); }
+  .option { font-size: var(--font-size-sm); }
 }
 
 /* ============================================
