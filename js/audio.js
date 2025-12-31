@@ -66,10 +66,20 @@ const Audio = {
       };
       
       this.currentAudio.onerror = function(e) {
-        console.warn('Youdao audio failed, trying backup...', e);
+        console.error('Audio error event:', e);
+        console.error('Audio error code:', self.currentAudio.error ? self.currentAudio.error.code : 'unknown');
+        console.warn('Youdao audio failed, trying backup...');
         // 备用方案：使用 Web Speech API
         var backupOptions = { volume: options.volume, repeat: totalRepeat - self.repeatCount };
         self.speakWithSpeechAPI(word, backupOptions);
+      };
+      
+      this.currentAudio.onloadstart = function() {
+        console.log('Audio loading started');
+      };
+      
+      this.currentAudio.oncanplay = function() {
+        console.log('Audio can play now');
       };
       
       var playPromise = this.currentAudio.play();

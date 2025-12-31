@@ -11,73 +11,14 @@ const Vocabulary = {
   // 词库索引（按ID快速查找）
   wordIndex: {},
 
-  // 词库配置 - 初中三年完整词库
+  // 词库配置 - 优化加载速度，只加载核心词库
   books: {
     'junior_high_all': {
-      name: '初中完整词库（3500词）',
+      name: '初中核心词库',
       files: [
-        // 七年级词库 (800词)
+        // 只加载核心词库（约200词），快速启动
         'vocab_grade7_core.json',
-        'vocab_grade7_core2.json',
-        'vocab_g7_batch3.json',
-        'vocab_g7_batch4.json',
-        'vocab_g7_batch5.json',
-        'vocab_g7_batch6.json',
-        'vocab_g7_batch7.json',
-        'vocab_g7_batch8.json',
-        'vocab_g7_batch9.json',
-        'vocab_g7_batch10.json',
-        'vocab_g7_batch11.json',
-        'vocab_g7_batch12.json',
-        'vocab_g7_batch13.json',
-        'vocab_g7_batch14.json',
-        'vocab_g7_batch15.json',
-        // 八年级词库 (1200词)
-        'vocab_g8_batch1.json',
-        'vocab_g8_batch2.json',
-        'vocab_g8_batch3.json',
-        'vocab_g8_batch4.json',
-        'vocab_g8_batch5.json',
-        'vocab_g8_batch6.json',
-        'vocab_g8_batch7.json',
-        'vocab_g8_batch8.json',
-        'vocab_g8_batch9.json',
-        'vocab_g8_batch10.json',
-        'vocab_g8_batch11.json',
-        'vocab_g8_batch12.json',
-        'vocab_g8_batch13.json',
-        'vocab_g8_batch14.json',
-        'vocab_g8_batch15.json',
-        'vocab_g8_batch16.json',
-        'vocab_g8_batch17.json',
-        'vocab_g8_batch18.json',
-        'vocab_g8_batch19.json',
-        'vocab_g8_batch20.json',
-        // 九年级词库 (1500词)
-        'vocab_g9_batch1.json',
-        'vocab_g9_batch2.json',
-        'vocab_g9_batch3.json',
-        'vocab_g9_batch4.json',
-        'vocab_g9_batch5.json',
-        'vocab_g9_batch6.json',
-        'vocab_g9_batch7.json',
-        'vocab_g9_batch8.json',
-        'vocab_g9_batch9.json',
-        'vocab_g9_batch10.json',
-        'vocab_g9_batch11.json',
-        'vocab_g9_batch12.json',
-        'vocab_g9_batch13.json',
-        'vocab_g9_batch14.json',
-        'vocab_g9_batch15.json',
-        'vocab_g9_batch16.json',
-        'vocab_g9_batch17.json',
-        'vocab_g9_batch18.json',
-        'vocab_g9_batch19.json',
-        'vocab_g9_batch20.json',
-        'vocab_g9_batch21.json',
-        'vocab_g9_batch22.json',
-        'vocab_g9_batch23.json',
-        'vocab_g9_batch24.json'
+        'vocab_grade7_core2.json'
       ]
     },
     'grade7': {
