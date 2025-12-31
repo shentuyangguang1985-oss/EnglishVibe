@@ -12,7 +12,7 @@ var _XF_TTS = (function() {
   return {
     a: d('ZDVmYjU5MzY='),                                    // APPID
     k: d('MWNiNGQ4ZmM0MzY3NTBlNGRkNGEzY2Y0YmJmMWNkMjU='),    // API Key
-    s: d('eWNUWjBRR00xSW1aeVlXTzVJek16RVdNd01qTW1OVE0=')     // API Secret
+    s: d('eWNUWjBRR00xMW1aeVlXTzVJek0yRVdNeE1qTWhOVE0=')     // API Secret (corrected)
   };
 })();
 
