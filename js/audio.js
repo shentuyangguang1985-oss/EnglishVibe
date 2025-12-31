@@ -186,7 +186,7 @@ const Audio = {
   },
 
   /**
-   * 播放句子发音（使用有道翻译API，对句子支持更好）
+   * 播放句子发音（使用有道词典API，与单词发音一致）
    * @param {string} sentence - 要发音的句子
    * @param {Object} options - 配置选项
    */
@@ -198,8 +198,8 @@ const Audio = {
     // 停止当前播放
     this.stop();
     
-    // 使用有道翻译TTS API（对句子支持更好）
-    var url = 'https://tts.youdao.com/fanyivoice?word=' + encodeURIComponent(sentence) + '&le=eng&keyfrom=speaker-target';
+    // 使用有道词典API（与单词发音一致，更稳定）
+    var url = 'https://dict.youdao.com/dictvoice?audio=' + encodeURIComponent(sentence) + '&type=2';
     console.log('Sentence audio URL:', url);
     
     try {
