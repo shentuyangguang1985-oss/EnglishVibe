@@ -4,7 +4,7 @@
  */
 
 const XfyunTTS = {
-  // API配置（从Storage读取）
+  // API配置
   config: {
     appId: '',
     apiKey: '',
@@ -43,37 +43,52 @@ const XfyunTTS = {
   },
 
   /**
-   * 生成鉴权URL
+   * 生成鉴权URL（严格按照官方文档）
+   * 参考：https://www.xfyun.cn/doc/tts/online_tts/API.html
    */
   getAuthUrl() {
-    var host = 'tts-api.xfyun.cn';
-    var path = '/v2/tts';
-    var date = new Date().toUTCString();
+    const host = 'tts-api.xfyun.cn';
+    const path = '/v2/tts';
     
-    // 构建签名原文（注意：每行末尾没有空格）
-    var signatureOrigin = 'host: ' + host + '\n' + 'date: ' + date + '\n' + 'GET ' + path + ' HTTP/1.1';
+    // 1. 生成RFC1123格式的时间戳
+    const date = new Date().toUTCString();
     
-    console.log('签名原文:', signatureOrigin);
-    console.log('API Secret:', this.config.apiSecret);
+    // 2. 构建签名原文（signature_origin）
+    // 格式：host: xxx\ndate: xxx\nGET /v2/tts HTTP/1.1
+    const signatureOrigin = 'host: ' + host + '\n' + 
+                           'date: ' + date + '\n' + 
+                           'GET ' + path + ' HTTP/1.1';
     
-    // HMAC-SHA256签名
-    var signatureSha = CryptoJS.HmacSHA256(signatureOrigin, this.config.apiSecret);
-    var signature = CryptoJS.enc.Base64.stringify(signatureSha);
+    console.log('[讯飞TTS] 签名原文:', JSON.stringify(signatureOrigin));
     
-    console.log('签名结果:', signature);
+    // 3. 使用 HMAC-SHA256 算法，以 api_secret 为密钥对签名原文进行签名
+    const signatureSha = CryptoJS.HmacSHA256(signatureOrigin, this.config.apiSecret);
     
-    // 构建authorization（使用单引号避免问题）
-    var authorizationOrigin = 'api_key="' + this.config.apiKey + '", algorithm="hmac-sha256", headers="host date request-line", signature="' + signature + '"';
+    // 4. 对签名结果进行 Base64 编码
+    const signature = CryptoJS.enc.Base64.stringify(signatureSha);
     
-    console.log('Authorization原文:', authorizationOrigin);
+    console.log('[讯飞TTS] 签名结果:', signature);
     
-    // Base64编码
-    var authorization = btoa(authorizationOrigin);
+    // 5. 构建 authorization_origin
+    // 格式：api_key="xxx", algorithm="hmac-sha256", headers="host date request-line", signature="xxx"
+    const authorizationOrigin = 'api_key="' + this.config.apiKey + 
+                               '", algorithm="hmac-sha256"' + 
+                               ', headers="host date request-line"' + 
+                               ', signature="' + signature + '"';
     
-    // 构建完整URL
-    var url = 'wss://' + host + path + '?authorization=' + authorization + '&date=' + encodeURIComponent(date) + '&host=' + host;
+    console.log('[讯飞TTS] Authorization原文:', authorizationOrigin);
     
-    console.log('完整URL:', url);
+    // 6. 对 authorization_origin 进行 Base64 编码
+    const authorization = btoa(authorizationOrigin);
+    
+    // 7. 构建完整的 WebSocket URL
+    // 注意：date 需要进行 URL 编码
+    const url = 'wss://' + host + path + 
+               '?authorization=' + authorization + 
+               '&date=' + encodeURIComponent(date) + 
+               '&host=' + host;
+    
+    console.log('[讯飞TTS] 完整URL:', url.substring(0, 200) + '...');
     
     return url;
   },
@@ -85,11 +100,13 @@ const XfyunTTS = {
    */
   speak(text, options) {
     options = options || {};
+    var self = this;
+    
     this.onEnd = options.onEnd || null;
     this.onError = options.onError || null;
     
     if (!this.isConfigured()) {
-      console.warn('讯飞TTS未配置');
+      console.warn('[讯飞TTS] 未配置API密钥');
       if (this.onError) this.onError(new Error('讯飞TTS未配置'));
       return;
     }
@@ -102,59 +119,81 @@ const XfyunTTS = {
 
     try {
       const url = this.getAuthUrl();
-      console.log('讯飞TTS连接中...');
+      console.log('[讯飞TTS] 正在连接...');
       
       this.ws = new WebSocket(url);
       
-      this.ws.onopen = () => {
-        console.log('讯飞TTS连接成功');
-        this.sendText(text);
+      this.ws.onopen = function() {
+        console.log('[讯飞TTS] WebSocket连接成功');
+        self.sendText(text);
       };
       
-      this.ws.onmessage = (e) => {
-        this.handleMessage(e.data);
+      this.ws.onmessage = function(e) {
+        self.handleMessage(e.data);
       };
       
-      this.ws.onerror = (e) => {
-        console.error('讯飞TTS连接错误:', e);
-        if (this.onError) this.onError(e);
+      this.ws.onerror = function(e) {
+        console.error('[讯飞TTS] WebSocket错误:', e);
+        if (self.onError) self.onError(new Error('WebSocket连接失败'));
       };
       
-      this.ws.onclose = () => {
-        console.log('讯飞TTS连接关闭');
+      this.ws.onclose = function(e) {
+        console.log('[讯飞TTS] WebSocket关闭, code:', e.code, 'reason:', e.reason);
       };
       
     } catch (e) {
-      console.error('讯飞TTS异常:', e);
+      console.error('[讯飞TTS] 异常:', e);
       if (this.onError) this.onError(e);
     }
   },
 
   /**
-   * 发送文本到讯飞
+   * 发送文本到讯飞进行合成
    */
   sendText(text) {
+    // 文本需要Base64编码
+    // 先将文本转为UTF-8字节，再Base64编码
+    const textBase64 = this.textToBase64(text);
+    
     const params = {
       common: {
         app_id: this.config.appId
       },
       business: {
-        aue: 'lame',        // MP3格式
-        auf: 'audio/L16;rate=16000',
-        vcn: 'x2_engam_laura',  // 英语发音人（美式女声）
-        speed: 50,          // 语速（0-100）
-        volume: 50,         // 音量（0-100）
-        pitch: 50,          // 音高（0-100）
-        tte: 'UTF8'
+        aue: 'lame',        // MP3格式（浏览器兼容性最好）
+        auf: 'audio/L16;rate=16000',  // 音频采样率
+        vcn: 'x2_lindsay',  // 英语女声Lindsay（已开通）
+        speed: 50,          // 语速（0-100，50为正常）
+        volume: 50,         // 音量（0-100，50为正常）
+        pitch: 50,          // 音高（0-100，50为正常）
+        tte: 'UTF8'         // 文本编码
       },
       data: {
-        status: 2,          // 一次性发送完整文本
-        text: btoa(unescape(encodeURIComponent(text)))  // Base64编码
+        status: 2,          // 2表示一次性发送完整文本
+        text: textBase64    // Base64编码后的文本
       }
     };
     
-    console.log('讯飞TTS发送文本:', text);
+    console.log('[讯飞TTS] 发送文本:', text);
+    console.log('[讯飞TTS] 请求参数:', JSON.stringify(params, null, 2));
+    
     this.ws.send(JSON.stringify(params));
+  },
+
+  /**
+   * 文本转Base64（处理UTF-8编码）
+   */
+  textToBase64(text) {
+    // 使用 encodeURIComponent 处理 Unicode 字符
+    // 然后用 unescape 转换回字节字符串
+    // 最后用 btoa 进行 Base64 编码
+    try {
+      return btoa(unescape(encodeURIComponent(text)));
+    } catch (e) {
+      console.error('[讯飞TTS] Base64编码失败:', e);
+      // 降级方案：直接返回简单的Base64
+      return btoa(text);
+    }
   },
 
   /**
@@ -164,9 +203,11 @@ const XfyunTTS = {
     try {
       const res = JSON.parse(data);
       
+      console.log('[讯飞TTS] 收到消息:', res.code, res.message || '');
+      
       if (res.code !== 0) {
-        console.error('讯飞TTS错误:', res.code, res.message);
-        if (this.onError) this.onError(new Error(res.message));
+        console.error('[讯飞TTS] 服务端错误:', res.code, res.message);
+        if (this.onError) this.onError(new Error('讯飞错误[' + res.code + ']: ' + res.message));
         this.close();
         return;
       }
@@ -176,53 +217,66 @@ const XfyunTTS = {
         this.audioData.push(res.data.audio);
       }
       
-      // 合成完成
+      // status=2 表示合成完成
       if (res.data && res.data.status === 2) {
-        console.log('讯飞TTS合成完成');
+        console.log('[讯飞TTS] 合成完成，共收到', this.audioData.length, '个音频片段');
         this.playAudio();
         this.close();
       }
       
     } catch (e) {
-      console.error('讯飞TTS解析错误:', e);
+      console.error('[讯飞TTS] 解析响应失败:', e);
     }
   },
 
   /**
-   * 播放音频
+   * 播放合成的音频
    */
   playAudio() {
+    var self = this;
+    
     if (this.audioData.length === 0) {
-      console.warn('讯飞TTS无音频数据');
+      console.warn('[讯飞TTS] 无音频数据');
+      if (this.onError) this.onError(new Error('无音频数据'));
       return;
     }
     
-    // 合并所有音频数据
+    // 合并所有音频片段
     const audioBase64 = this.audioData.join('');
     const audioUrl = 'data:audio/mp3;base64,' + audioBase64;
     
-    const audio = new window.Audio(audioUrl);
-    audio.onended = () => {
-      console.log('讯飞TTS播放完成');
-      if (this.onEnd) this.onEnd();
-    };
-    audio.onerror = (e) => {
-      console.error('讯飞TTS播放错误:', e);
-      if (this.onError) this.onError(e);
+    console.log('[讯飞TTS] 播放音频，大小:', audioBase64.length, '字符');
+    
+    var audio = new Audio(audioUrl);
+    
+    audio.onended = function() {
+      console.log('[讯飞TTS] 播放完成');
+      if (self.onEnd) self.onEnd();
     };
     
-    audio.play().catch(e => {
-      console.error('讯飞TTS播放失败:', e);
-      if (this.onError) this.onError(e);
+    audio.onerror = function(e) {
+      console.error('[讯飞TTS] 播放错误:', e);
+      if (self.onError) self.onError(e);
+    };
+    
+    audio.play().then(function() {
+      console.log('[讯飞TTS] 开始播放');
+    }).catch(function(e) {
+      console.error('[讯飞TTS] 播放失败:', e);
+      if (self.onError) self.onError(e);
     });
   },
 
   /**
-   * 关闭连接
+   * 关闭WebSocket连接
    */
   close() {
     if (this.ws) {
-      this.ws.close();
+      try {
+        this.ws.close();
+      } catch (e) {
+        // 忽略关闭错误
+      }
       this.ws = null;
     }
   },
@@ -239,4 +293,3 @@ const XfyunTTS = {
 if (typeof module !== 'undefined' && module.exports) {
   module.exports = XfyunTTS;
 }
-
