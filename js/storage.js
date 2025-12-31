@@ -13,12 +13,12 @@ var _XF = (function() {
   }
   // 混淆后的值（原始值反转后Base64编码）
   return {
-    // APPID
+    // APPID: 6395bf5d
     a: d('ZDVmYjU5MzY='),
-    // API Key  
+    // API Key: 52dc1fbb4fc3a4dd4e057634cf8d4bc1
     k: d('MWNiNGQ4ZmM0MzY3NTBlNGRkNGEzY2Y0YmJmMWNkMjU='),
-    // API Secret
-    s: d('eWN0WjBRREdNMUltZjJZWTk1SXp6TVd6TTdNbU5UTQ==')
+    // API Secret: MTNmMjMwMWEzMzI5OWYyZmI1MGQ0ZTcy
+    s: d('eWNUWjBRR00xSW1aeVlXTzVJek16RVdNd01qTW1OVE0=')
   };
 })();
 
