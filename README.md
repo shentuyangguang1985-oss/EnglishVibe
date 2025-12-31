@@ -24,28 +24,31 @@
 - **严格筛选** - 不含小学词汇，专注初中阶段
 - **例句辅助** - 每个单词配套例句，理解更深刻
 
-### 🔊 真人发音
-- **有道词典真人发音** - 清晰标准的美式/英式发音
-- **单词读两遍** - 加深印象
-- **例句朗读** - 学习地道表达
+### 🔊 高品质发音
+- **有道词典真人发音** - 清晰标准的单词发音
+- **讯飞TTS例句朗读** - 流畅自然的例句发音（Luna 语音）
+- **单词读两遍** - 间隔250ms，加深印象
 
 ### 📅 科学记忆
-- **每日目标** - 默认每天20个新单词
-- **间隔复习** - 1天、3天、7天科学复习
+- **每日目标** - 可选 20/30/50/100 个新单词
+- **间隔复习** - 1天、3天、7天科学复习（艾宾浩斯曲线）
 - **进度追踪** - 实时显示学习统计
 
 ### 📱 PWA 支持
 - **安装到手机** - 像原生 App 一样使用
-- **离线可用** - 无需网络也能学习
+- **离线可用** - 无需网络也能学习（发音除外）
 - **跨平台** - Android、iOS、电脑都能用
 
 ---
 
 ## 🌐 在线体验
 
-**Vercel 部署地址**：[https://english-vibe.vercel.app](https://english-vibe.vercel.app)
+| 平台 | 地址 | 说明 |
+|------|------|------|
+| **Cloudflare Pages** | [englishvibe.shentuyangguang1985.workers.dev](https://englishvibe.shentuyangguang1985.workers.dev) | 🇨🇳 **国内访问推荐** |
+| **Vercel** | [english-vibe.vercel.app](https://english-vibe.vercel.app) | 备用地址 |
 
-> 💡 建议添加到手机主屏幕，获得最佳体验！
+> 💡 **推荐使用 Cloudflare Pages 地址**，国内访问更快更稳定！
 
 ---
 
@@ -79,18 +82,20 @@ EnglishVibe/
 ├── settings.html       # 设置页面
 ├── complete.html       # 完成页面
 ├── css/
-│   └── style.css       # 样式文件
+│   └── style.css       # 样式文件（含响应式适配）
 ├── js/
 │   ├── app.js          # 主应用逻辑
-│   ├── audio.js        # 音频模块
+│   ├── audio.js        # 音频模块（有道API）
 │   ├── learn.js        # 学习逻辑
 │   ├── review.js       # 复习逻辑
-│   ├── storage.js      # 存储模块
-│   └── vocabulary.js   # 词库管理
+│   ├── storage.js      # 存储模块（localStorage）
+│   ├── vocabulary.js   # 词库管理
+│   └── xfyun-tts.js    # 讯飞TTS（例句发音）
 ├── data/               # 词库数据 (JSON)
 ├── assets/             # 图标资源
 ├── manifest.json       # PWA 配置
-└── sw.js              # Service Worker
+├── wrangler.jsonc      # Cloudflare Pages 配置
+└── sw.js               # Service Worker
 ```
 
 ---
@@ -106,10 +111,12 @@ EnglishVibe/
 
 ### iPhone / iPad
 
-1. 用 **Safari** 打开在线地址
-2. 点击底部 **分享** 按钮
+1. 用 **Safari** 打开在线地址（必须是Safari！）
+2. 点击底部 **分享** 按钮 ⬆️
 3. 选择 **"添加到主屏幕"**
 4. 点击 **"添加"**
+
+> 📖 详细指南请参考 [PWA安装指南.md](PWA安装指南.md)
 
 ---
 
@@ -117,11 +124,12 @@ EnglishVibe/
 
 ### 学习流程
 
-1. **开始学习** - 点击首页"开始今日学习"
+1. **开始学习** - 点击首页"开始学习"按钮
 2. **听发音** - 系统自动播放单词发音（读2遍）
 3. **选答案** - 根据发音选择正确的中文释义
-4. **看例句** - 答题后显示例句加深理解
+4. **看例句** - 答题后显示例句，点击🔊可听例句发音
 5. **点击下一个** - 继续学习下一个单词
+6. **继续学习** - 完成今日目标后可继续学习更多
 
 ### 复习机制
 
@@ -129,14 +137,23 @@ EnglishVibe/
 - 按照 **1天、3天、7天** 的间隔复习
 - 答错的单词会重新加入学习
 
+### 设置选项
+
+- **每日目标** - 20/30/50/100词可选
+- **清除数据** - 重置所有学习进度
+
 ---
 
 ## 🛠️ 技术栈
 
-- **前端**: 纯 HTML5 + CSS3 + Vanilla JavaScript
-- **发音**: 有道词典 API
-- **存储**: LocalStorage
-- **PWA**: Service Worker + Web App Manifest
+| 模块 | 技术 |
+|------|------|
+| 前端 | 纯 HTML5 + CSS3 + Vanilla JavaScript |
+| 单词发音 | 有道词典 API |
+| 例句发音 | 讯飞 TTS WebSocket API (Luna 语音) |
+| 存储 | LocalStorage |
+| PWA | Service Worker + Web App Manifest |
+| 部署 | Cloudflare Pages / Vercel |
 
 ---
 
@@ -144,7 +161,23 @@ EnglishVibe/
 
 - 外研版《新标准英语》初中教材
 - 人教版初中英语教材
-- 合并去重，严格筛选初中阶段词汇
+- 合并去重，严格筛选初中阶段词汇（不含小学词汇）
+- 共计 **2276个** 核心词汇
+
+---
+
+## 📋 相关文档
+
+- [PWA安装指南.md](PWA安装指南.md) - 详细的PWA安装说明
+- [问题解决指南.md](问题解决指南.md) - 常见问题与解决方案
+
+---
+
+## 🙏 致谢
+
+- [有道词典](https://dict.youdao.com) - 提供单词发音
+- [讯飞开放平台](https://www.xfyun.cn) - 提供例句TTS服务
+- [Cloudflare Pages](https://pages.cloudflare.com) - 提供免费托管服务
 
 ---
 
@@ -163,4 +196,3 @@ MIT License
 <p align="center">
   Made with ❤️ for 初中生
 </p>
-
