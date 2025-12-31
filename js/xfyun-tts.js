@@ -242,27 +242,41 @@ const XfyunTTS = {
       return;
     }
     
-    // 合并所有音频片段
-    var audioBase64 = this.audioData.join('');
-    console.log('[讯飞TTS] 播放音频，大小:', audioBase64.length, '字符');
+    console.log('[讯飞TTS] 播放音频，片段数:', this.audioData.length);
     
     try {
-      // 将Base64转换为Blob（更好的浏览器兼容性）
-      var binaryString = atob(audioBase64);
-      var bytes = new Uint8Array(binaryString.length);
-      for (var i = 0; i < binaryString.length; i++) {
-        bytes[i] = binaryString.charCodeAt(i);
+      // 逐个解码Base64片段，然后合并二进制数据
+      var allBytes = [];
+      for (var i = 0; i < this.audioData.length; i++) {
+        var chunk = this.audioData[i];
+        try {
+          var binaryString = atob(chunk);
+          for (var j = 0; j < binaryString.length; j++) {
+            allBytes.push(binaryString.charCodeAt(j));
+          }
+        } catch (e) {
+          console.warn('[讯飞TTS] 片段', i, '解码失败:', e);
+        }
       }
+      
+      console.log('[讯飞TTS] 合并后字节数:', allBytes.length);
+      
+      if (allBytes.length === 0) {
+        throw new Error('无有效音频数据');
+      }
+      
+      // 创建Blob并播放
+      var bytes = new Uint8Array(allBytes);
       var blob = new Blob([bytes], { type: 'audio/mp3' });
       var audioUrl = URL.createObjectURL(blob);
       
-      console.log('[讯飞TTS] 创建Blob URL:', audioUrl);
+      console.log('[讯飞TTS] 创建Blob URL成功');
       
       var audio = new window.Audio(audioUrl);
       
       audio.onended = function() {
         console.log('[讯飞TTS] 播放完成');
-        URL.revokeObjectURL(audioUrl);  // 释放内存
+        URL.revokeObjectURL(audioUrl);
         if (self.onEnd) self.onEnd();
       };
       
