@@ -209,17 +209,26 @@ const Storage = {
    * @returns {Object} 设置对象
    */
   getSettings() {
-    return this.load('settings', {
+    var settings = this.load('settings', {
       dailyGoal: 20,
       autoPlayAudio: true,
       showSentence: true,
       vibrationEnabled: true,
-      // 讯飞TTS配置（使用混淆后的默认值）
-      xfyunAppId: _XF.a,
-      xfyunApiKey: _XF.k,
-      xfyunApiSecret: _XF.s,
-      usePremiumTTS: true  // 默认启用高品质TTS
+      xfyunAppId: '',
+      xfyunApiKey: '',
+      xfyunApiSecret: '',
+      usePremiumTTS: false
     });
+    
+    // 如果讯飞配置为空，使用默认值
+    if (!settings.xfyunAppId) {
+      settings.xfyunAppId = _XF.a;
+      settings.xfyunApiKey = _XF.k;
+      settings.xfyunApiSecret = _XF.s;
+      settings.usePremiumTTS = true;
+    }
+    
+    return settings;
   },
 
   /**
