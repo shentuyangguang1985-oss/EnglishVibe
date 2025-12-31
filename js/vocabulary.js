@@ -11,14 +11,13 @@ const Vocabulary = {
   // 词库索引（按ID快速查找）
   wordIndex: {},
 
-  // 词库配置 - 优化加载速度，只加载核心词库
+  // 词库配置 - 使用合并后的单一文件，加载更快
   books: {
     'junior_high_all': {
-      name: '初中核心词库',
+      name: '初中完整词库（2276词）',
       files: [
-        // 只加载核心词库（约200词），快速启动
-        'vocab_grade7_core.json',
-        'vocab_grade7_core2.json'
+        // 所有词汇合并到一个文件，只需一次网络请求
+        'vocab_all.json'
       ]
     },
     'grade7': {
