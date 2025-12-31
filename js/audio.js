@@ -106,8 +106,11 @@ const Audio = {
   /**
    * 使用 Web Speech API 发音（备用方案）
    */
-  speakWithSpeechAPI(word, options = {}) {
-    const synth = window.speechSynthesis;
+  speakWithSpeechAPI(word, options) {
+    options = options || {};
+    var self = this;
+    var synth = window.speechSynthesis;
+    
     if (!synth) {
       console.warn('Speech synthesis not supported');
       return;
@@ -116,27 +119,46 @@ const Audio = {
     // 取消任何正在进行的语音
     synth.cancel();
     
-    const repeat = options.repeat || 1;
-    let currentRepeat = 0;
+    var repeat = options.repeat || 1;
+    var currentRepeat = 0;
     
-    const playOnce = () => {
-      const utterance = new SpeechSynthesisUtterance(word);
+    var playOnce = function() {
+      // 再次取消以确保干净状态
+      synth.cancel();
+      
+      var utterance = new SpeechSynthesisUtterance(word);
       utterance.lang = 'en-US';
-      utterance.rate = 0.85;
+      utterance.rate = 0.9;
       utterance.pitch = 1;
       utterance.volume = options.volume || 1;
 
       // 尝试获取英语语音
-      const voices = synth.getVoices();
-      const englishVoice = voices.find(v => 
-        v.lang === 'en-US' || v.lang === 'en-GB'
-      ) || voices.find(v => v.lang.startsWith('en'));
+      var voices = synth.getVoices();
+      console.log('Available voices:', voices.length);
+      
+      var englishVoice = null;
+      for (var i = 0; i < voices.length; i++) {
+        if (voices[i].lang === 'en-US' || voices[i].lang === 'en-GB') {
+          englishVoice = voices[i];
+          break;
+        }
+      }
+      if (!englishVoice) {
+        for (var i = 0; i < voices.length; i++) {
+          if (voices[i].lang.indexOf('en') === 0) {
+            englishVoice = voices[i];
+            break;
+          }
+        }
+      }
       
       if (englishVoice) {
         utterance.voice = englishVoice;
+        console.log('Using voice:', englishVoice.name);
       }
 
-      utterance.onend = () => {
+      utterance.onend = function() {
+        console.log('Speech API finished');
         currentRepeat++;
         if (currentRepeat < repeat) {
           setTimeout(playOnce, 250);
@@ -145,18 +167,31 @@ const Audio = {
         }
       };
       
-      utterance.onerror = (e) => {
+      utterance.onerror = function(e) {
         console.warn('Speech API error:', e);
+        // 不再重试，静默失败
       };
 
-      synth.speak(utterance);
+      // 延迟一点播放，确保状态稳定
+      setTimeout(function() {
+        synth.speak(utterance);
+      }, 50);
     };
     
     // 确保语音已加载
-    if (synth.getVoices().length === 0) {
-      synth.onvoiceschanged = () => {
+    var voices = synth.getVoices();
+    if (voices.length === 0) {
+      console.log('Waiting for voices to load...');
+      synth.onvoiceschanged = function() {
+        console.log('Voices loaded:', synth.getVoices().length);
         playOnce();
       };
+      // 设置超时，如果5秒内语音没加载就放弃
+      setTimeout(function() {
+        if (synth.getVoices().length === 0) {
+          console.warn('Voices failed to load');
+        }
+      }, 5000);
     } else {
       playOnce();
     }
@@ -198,24 +233,54 @@ const Audio = {
     // 停止当前播放
     this.stop();
     
-    // 使用有道词典API（与单词发音一致，更稳定）
-    var url = 'https://dict.youdao.com/dictvoice?audio=' + encodeURIComponent(sentence) + '&type=2';
+    // 清理句子中可能导致问题的字符
+    var cleanSentence = sentence.replace(/['']/g, "'").replace(/[""]/g, '"');
+    
+    // 使用有道词典API
+    var url = 'https://dict.youdao.com/dictvoice?audio=' + encodeURIComponent(cleanSentence) + '&type=2';
     console.log('Sentence audio URL:', url);
+    
+    var audioLoaded = false;
+    var audioPlayed = false;
+    var fallbackTriggered = false;
+    
+    // 设置超时，如果3秒内没有成功播放就使用备用方案
+    var timeoutId = setTimeout(function() {
+      if (!audioPlayed && !fallbackTriggered) {
+        console.warn('Sentence audio timeout, trying backup...');
+        fallbackTriggered = true;
+        self.speakWithSpeechAPI(cleanSentence, { volume: 1, repeat: 1 });
+      }
+    }, 3000);
+    
+    var clearTimeoutAndFallback = function() {
+      clearTimeout(timeoutId);
+      if (!fallbackTriggered) {
+        fallbackTriggered = true;
+        console.log('Trying Web Speech API for sentence...');
+        self.speakWithSpeechAPI(cleanSentence, { volume: 1, repeat: 1 });
+      }
+    };
     
     try {
       this.currentAudio = new window.Audio(url);
       this.currentAudio.volume = options.volume || 1;
       
+      this.currentAudio.onloadeddata = function() {
+        console.log('Sentence audio loaded');
+        audioLoaded = true;
+      };
+      
       this.currentAudio.onended = function() {
         console.log('Sentence audio ended');
+        clearTimeout(timeoutId);
+        audioPlayed = true;
         if (options.onEnd) options.onEnd();
       };
       
       this.currentAudio.onerror = function(e) {
         console.error('Sentence audio error:', e);
-        // 备用方案：使用 Web Speech API
-        console.log('Trying Web Speech API for sentence...');
-        self.speakWithSpeechAPI(sentence, { volume: 1, repeat: 1 });
+        clearTimeoutAndFallback();
       };
       
       this.currentAudio.oncanplay = function() {
@@ -226,14 +291,16 @@ const Audio = {
       if (playPromise !== undefined) {
         playPromise.then(function() {
           console.log('Sentence audio playing!');
+          audioPlayed = true;
+          clearTimeout(timeoutId);
         }).catch(function(e) {
           console.warn('Sentence audio play failed:', e);
-          self.speakWithSpeechAPI(sentence, { volume: 1, repeat: 1 });
+          clearTimeoutAndFallback();
         });
       }
     } catch (e) {
       console.error('Sentence audio exception:', e);
-      this.speakWithSpeechAPI(sentence, { volume: 1, repeat: 1 });
+      clearTimeoutAndFallback();
     }
   },
 
