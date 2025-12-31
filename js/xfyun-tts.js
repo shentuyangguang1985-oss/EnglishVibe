@@ -161,11 +161,12 @@ const XfyunTTS = {
       },
       business: {
         aue: 'lame',        // MP3格式（浏览器兼容性最好）
+        sfl: 1,             // 开启流式返回（更快响应）
         auf: 'audio/L16;rate=16000',  // 音频采样率
-        vcn: 'lindsay',     // 英语女声Lindsay（特色发音人）
-        speed: 50,          // 语速（0-100，50为正常）
-        volume: 50,         // 音量（0-100，50为正常）
-        pitch: 50,          // 音高（0-100，50为正常）
+        vcn: 'luna',        // 英语女声Luna（发音更流畅）
+        speed: 45,          // 语速（稍慢一点更自然）
+        volume: 60,         // 音量（稍大一点）
+        pitch: 50,          // 音高
         tte: 'UTF8'         // 文本编码
       },
       data: {
