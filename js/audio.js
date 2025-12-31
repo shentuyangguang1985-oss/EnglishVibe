@@ -360,10 +360,10 @@ const Audio = {
     options = options || {};
     var self = this;
     
-    // 将句子拆分成2-3个词一组的片段
+    // 将句子拆分成2个词一组的片段（有道API对2词支持最好）
     var words = sentence.split(' ');
     var chunks = [];
-    var chunkSize = 3; // 每组3个词
+    var chunkSize = 2; // 每组2个词
     
     for (var i = 0; i < words.length; i += chunkSize) {
       var chunk = words.slice(i, i + chunkSize).join(' ');
