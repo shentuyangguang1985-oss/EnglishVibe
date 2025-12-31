@@ -3,7 +3,7 @@
  * 实现PWA离线缓存功能
  */
 
-const CACHE_NAME = 'englishvibe-v3';
+const CACHE_NAME = 'englishvibe-v4';
 
 // 需要缓存的静态资源
 const STATIC_ASSETS = [
@@ -156,8 +156,8 @@ self.addEventListener('push', event => {
   const title = data.title || 'EnglishVibe';
   const options = {
     body: data.body || '该学习英语啦！',
-    icon: './assets/icons/icon-192.png',
-    badge: './assets/icons/icon-72.png',
+    icon: './assets/icons/icon.svg',
+    badge: './assets/icons/icon.svg',
     vibrate: [100, 50, 100],
     data: {
       url: data.url || './'
