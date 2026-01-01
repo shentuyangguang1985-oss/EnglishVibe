@@ -1230,3 +1230,181 @@ body {
   }
 }
 
+/* ============================================
+   平板/电脑横屏适配 - 确保一屏显示
+   ============================================ */
+@media (min-width: 768px) and (orientation: landscape) {
+  .app {
+    min-height: 100vh;
+    min-height: 100dvh;
+    max-height: 100vh;
+    max-height: 100dvh;
+    overflow: hidden;
+  }
+  
+  .main {
+    padding: var(--spacing-sm) var(--spacing-xl);
+    gap: var(--spacing-sm);
+    flex: 1;
+    justify-content: center;
+    overflow: auto;
+    max-width: 900px;
+  }
+  
+  .header {
+    padding: var(--spacing-xs) var(--spacing-xl);
+    min-height: auto;
+    flex-shrink: 0;
+  }
+  
+  /* 单词卡片压缩 */
+  .word-card {
+    padding: var(--spacing-sm) var(--spacing-md);
+    flex-shrink: 0;
+  }
+  
+  .word-card__image {
+    height: 140px;
+    max-height: 20vh;
+    margin-bottom: var(--spacing-xs);
+  }
+  
+  .word-card__word {
+    font-size: var(--font-size-xl);
+    margin-bottom: 2px;
+  }
+  
+  .word-card__phonetic {
+    font-size: var(--font-size-sm);
+    margin-bottom: var(--spacing-xs);
+  }
+  
+  .word-card__sentence {
+    margin-top: var(--spacing-xs);
+    padding: var(--spacing-xs) var(--spacing-sm);
+  }
+  
+  .word-card__sentence-en { font-size: var(--font-size-sm); }
+  .word-card__sentence-cn { font-size: var(--font-size-xs); }
+  
+  /* 选项横向 2x2 排列 */
+  .options-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--spacing-xs);
+    margin-top: var(--spacing-sm);
+    flex-shrink: 0;
+  }
+  
+  .option {
+    min-height: 48px;
+    padding: var(--spacing-xs) var(--spacing-md);
+    font-size: var(--font-size-sm);
+  }
+  
+  #btn-continue {
+    margin-top: var(--spacing-sm) !important;
+    padding: var(--spacing-sm) var(--spacing-lg);
+    flex-shrink: 0;
+  }
+  
+  .footer-info {
+    padding: var(--spacing-xs) var(--spacing-lg);
+    font-size: var(--font-size-xs);
+    flex-shrink: 0;
+  }
+}
+
+/* ============================================
+   平板横屏高度较小时进一步压缩 (max-height: 700px)
+   ============================================ */
+@media (min-width: 768px) and (orientation: landscape) and (max-height: 700px) {
+  .header {
+    padding: 4px var(--spacing-lg);
+  }
+  
+  .main {
+    padding: var(--spacing-xs) var(--spacing-lg);
+    gap: 4px;
+  }
+  
+  .word-card {
+    padding: var(--spacing-xs) var(--spacing-sm);
+  }
+  
+  .word-card__image {
+    height: 100px;
+    max-height: 15vh;
+    margin-bottom: 4px;
+  }
+  
+  .word-card__word { font-size: var(--font-size-lg); margin-bottom: 0; }
+  .word-card__phonetic { font-size: var(--font-size-xs); margin-bottom: 2px; }
+  
+  .word-card__sentence {
+    padding: 4px var(--spacing-xs);
+    margin-top: 4px;
+  }
+  .word-card__sentence-en { font-size: var(--font-size-xs); }
+  .word-card__sentence-cn { font-size: 11px; }
+  
+  .options-grid {
+    gap: 4px;
+    margin-top: var(--spacing-xs);
+  }
+  
+  .option {
+    min-height: 42px;
+    padding: 4px var(--spacing-sm);
+    font-size: var(--font-size-xs);
+  }
+  
+  #btn-continue {
+    margin-top: var(--spacing-xs) !important;
+    padding: var(--spacing-xs) var(--spacing-md);
+    font-size: var(--font-size-sm);
+  }
+  
+  .footer-info {
+    padding: 2px var(--spacing-md);
+    font-size: 11px;
+  }
+}
+
+/* ============================================
+   平板横屏极限压缩 (max-height: 500px)
+   ============================================ */
+@media (min-width: 768px) and (orientation: landscape) and (max-height: 500px) {
+  .header { padding: 2px var(--spacing-md); }
+  
+  .main { padding: 2px var(--spacing-md); gap: 2px; }
+  
+  .word-card { padding: 4px; }
+  
+  .word-card__image {
+    height: 70px;
+    max-height: 12vh;
+    margin-bottom: 2px;
+  }
+  
+  .word-card__word { font-size: var(--font-size-md); }
+  .word-card__phonetic { font-size: 11px; }
+  
+  .word-card__sentence { display: none; } /* 极限情况隐藏例句 */
+  
+  .options-grid { gap: 2px; margin-top: 4px; }
+  
+  .option {
+    min-height: 36px;
+    padding: 2px var(--spacing-xs);
+    font-size: 12px;
+  }
+  
+  #btn-continue {
+    padding: 4px var(--spacing-sm);
+    font-size: var(--font-size-xs);
+  }
+  
+  .footer-info { display: none; }
+}
+
