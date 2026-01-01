@@ -237,13 +237,44 @@ const Vocabulary = {
   },
 
   /**
-   * 获取一批新单词（用于学习）
+   * 获取一批新单词（用于学习）- 顺序模式（已弃用，保留兼容）
    * @param {number} startIndex - 起始索引
    * @param {number} count - 数量
    * @returns {Array} 单词数组
    */
   getNewWords(startIndex, count) {
     return this.words.slice(startIndex, startIndex + count);
+  },
+
+  /**
+   * 随机获取未学过的单词（新的随机模式）
+   * @param {Object} wordProgress - 已学单词的进度对象 { wordId: { ... } }
+   * @param {number} count - 需要获取的数量
+   * @returns {Array} 随机选取的未学单词数组
+   */
+  getRandomNewWords(wordProgress, count) {
+    // 获取所有未学过的单词
+    const learnedIds = new Set(Object.keys(wordProgress || {}));
+    const unlearnedWords = this.words.filter(word => !learnedIds.has(word.id));
+    
+    // 如果未学单词不足，返回所有未学的
+    if (unlearnedWords.length <= count) {
+      return this.shuffleArray(unlearnedWords);
+    }
+    
+    // 随机选取指定数量的单词
+    const shuffled = this.shuffleArray(unlearnedWords);
+    return shuffled.slice(0, count);
+  },
+
+  /**
+   * 获取未学单词总数
+   * @param {Object} wordProgress - 已学单词的进度对象
+   * @returns {number} 未学单词数量
+   */
+  getUnlearnedCount(wordProgress) {
+    const learnedIds = new Set(Object.keys(wordProgress || {}));
+    return this.words.filter(word => !learnedIds.has(word.id)).length;
   },
 
   /**

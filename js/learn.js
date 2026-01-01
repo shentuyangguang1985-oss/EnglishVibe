@@ -73,21 +73,21 @@ const Learn = {
   },
 
   /**
-   * 准备学习队列
+   * 准备学习队列 - 使用随机模式
    */
   prepareLearnQueue(progress) {
     const totalWords = Vocabulary.getTotalCount();
-    const startIndex = progress.currentIndex || 0;
+    const unlearnedCount = Vocabulary.getUnlearnedCount(progress.wordProgress);
     
     // 继续学习模式：忽略今日目标，继续学习下一批
     let count;
     if (this.state.continueMode) {
       // 继续学习模式，每次加载一个完整的每日目标数量
-      count = Math.min(this.state.dailyGoal, totalWords - startIndex, 20);
+      count = Math.min(this.state.dailyGoal, unlearnedCount, 20);
     } else {
       // 正常模式，检查今日剩余
       const remainingToday = this.state.dailyGoal - this.state.todayLearned;
-      count = Math.min(remainingToday, totalWords - startIndex, 20);
+      count = Math.min(remainingToday, unlearnedCount, 20);
     }
     
     if (count <= 0) {
@@ -96,11 +96,11 @@ const Learn = {
       return;
     }
     
-    // 获取学习队列
-    this.state.learnQueue = Vocabulary.getNewWords(startIndex, count);
+    // 随机获取未学过的单词
+    this.state.learnQueue = Vocabulary.getRandomNewWords(progress.wordProgress, count);
     this.state.currentIndex = 0;
     
-    console.log(`Prepared ${this.state.learnQueue.length} words for learning (continue mode: ${this.state.continueMode})`);
+    console.log(`Prepared ${this.state.learnQueue.length} random words for learning (continue mode: ${this.state.continueMode})`);
   },
 
   /**
@@ -412,10 +412,10 @@ const Learn = {
     // 更新今日统计
     Storage.incrementNewLearned();
     
-    // 更新总进度
+    // 更新总进度（使用 wordProgress 的数量来统计）
     const progress = Storage.getProgress();
-    progress.currentIndex = (progress.currentIndex || 0) + 1;
-    progress.totalStats.totalLearned = (progress.totalStats.totalLearned || 0) + 1;
+    // totalLearned 改为根据 wordProgress 的键数量来计算，更准确
+    progress.totalStats.totalLearned = Object.keys(progress.wordProgress || {}).length;
     Storage.saveProgress(progress);
     
     // 显示下一个单词
@@ -466,27 +466,25 @@ const Learn = {
   },
 
   /**
-   * 继续额外学习（超出今日目标）
+   * 继续额外学习（超出今日目标）- 使用随机模式
    */
   continueExtraLearning() {
     const progress = Storage.getProgress();
-    const totalWords = Vocabulary.getTotalCount();
-    const startIndex = progress.currentIndex || 0;
+    const unlearnedCount = Vocabulary.getUnlearnedCount(progress.wordProgress);
     
     // 还有单词可学吗？
-    const remaining = totalWords - startIndex;
-    if (remaining <= 0) {
+    if (unlearnedCount <= 0) {
       alert('恭喜！你已学完全部单词！🎉');
       window.location.href = './index.html';
       return;
     }
     
-    // 每次额外学习10个单词
-    const count = Math.min(remaining, 10);
-    this.state.learnQueue = Vocabulary.getNewWords(startIndex, count);
+    // 每次额外学习10个单词（随机选取）
+    const count = Math.min(unlearnedCount, 10);
+    this.state.learnQueue = Vocabulary.getRandomNewWords(progress.wordProgress, count);
     this.state.currentIndex = 0;
     
-    console.log(`Extra learning: ${count} words`);
+    console.log(`Extra learning: ${count} random words`);
     this.showCurrentWord();
   },
 
