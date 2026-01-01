@@ -11,6 +11,16 @@ const Vocabulary = {
   // 词库索引（按ID快速查找）
   wordIndex: {},
 
+  // 学习阶段配置（按年级学期顺序）
+  learningStages: [
+    { id: 'g7_up', name: '七年级上', prefix: 'g7_', startNum: 1, endNum: 417 },
+    { id: 'g7_down', name: '七年级下', prefix: 'g7_', startNum: 418, endNum: 835 },
+    { id: 'g8_up', name: '八年级上', prefix: 'g8_', startNum: 1, endNum: 423 },
+    { id: 'g8_down', name: '八年级下', prefix: 'g8_', startNum: 424, endNum: 846 },
+    { id: 'g9_up', name: '九年级上', prefix: 'g9_', startNum: 1, endNum: 297 },
+    { id: 'g9_down', name: '九年级下', prefix: 'g9_', startNum: 298, endNum: 595 }
+  ],
+
   // 词库配置 - 使用合并后的单一文件，加载更快
   books: {
     'junior_high_all': {
@@ -247,15 +257,74 @@ const Vocabulary = {
   },
 
   /**
-   * 随机获取未学过的单词（新的随机模式）
+   * 判断单词是否属于某个学习阶段
+   */
+  isWordInStage(word, stage) {
+    if (!word.id) return false;
+    
+    // 检查ID前缀
+    if (!word.id.startsWith(stage.prefix)) return false;
+    
+    // 提取ID中的数字
+    const numStr = word.id.replace(stage.prefix, '');
+    const num = parseInt(numStr, 10);
+    
+    // 检查数字范围
+    return num >= stage.startNum && num <= stage.endNum;
+  },
+
+  /**
+   * 获取当前学习阶段
+   * 按顺序找到第一个未学完的阶段
+   */
+  getCurrentStage(wordProgress) {
+    const learnedIds = new Set(Object.keys(wordProgress || {}));
+    
+    for (const stage of this.learningStages) {
+      // 统计该阶段未学的单词数
+      const stageWords = this.words.filter(w => this.isWordInStage(w, stage));
+      const unlearnedInStage = stageWords.filter(w => !learnedIds.has(w.id));
+      
+      // 如果该阶段还有未学的单词，返回该阶段
+      if (unlearnedInStage.length > 0) {
+        return {
+          stage,
+          total: stageWords.length,
+          learned: stageWords.length - unlearnedInStage.length,
+          remaining: unlearnedInStage.length
+        };
+      }
+    }
+    
+    // 所有阶段都学完了
+    return null;
+  },
+
+  /**
+   * 随机获取未学过的单词（按阶段顺序 + 随机模式）
    * @param {Object} wordProgress - 已学单词的进度对象 { wordId: { ... } }
    * @param {number} count - 需要获取的数量
    * @returns {Array} 随机选取的未学单词数组
    */
   getRandomNewWords(wordProgress, count) {
-    // 获取所有未学过的单词
     const learnedIds = new Set(Object.keys(wordProgress || {}));
-    const unlearnedWords = this.words.filter(word => !learnedIds.has(word.id));
+    
+    // 获取当前学习阶段
+    const currentStageInfo = this.getCurrentStage(wordProgress);
+    
+    if (!currentStageInfo) {
+      // 所有阶段都学完了
+      return [];
+    }
+    
+    const stage = currentStageInfo.stage;
+    
+    // 获取当前阶段未学过的单词
+    const unlearnedWords = this.words.filter(word => 
+      this.isWordInStage(word, stage) && !learnedIds.has(word.id)
+    );
+    
+    console.log(`Current stage: ${stage.name}, remaining: ${unlearnedWords.length} words`);
     
     // 如果未学单词不足，返回所有未学的
     if (unlearnedWords.length <= count) {
@@ -275,6 +344,13 @@ const Vocabulary = {
   getUnlearnedCount(wordProgress) {
     const learnedIds = new Set(Object.keys(wordProgress || {}));
     return this.words.filter(word => !learnedIds.has(word.id)).length;
+  },
+
+  /**
+   * 获取当前阶段信息（用于UI显示）
+   */
+  getStageInfo(wordProgress) {
+    return this.getCurrentStage(wordProgress);
   },
 
   /**

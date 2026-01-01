@@ -92,6 +92,24 @@ const App = {
       this.setText('stat-accuracy', '--');
     }
     
+    // 当前学习阶段
+    const stageInfo = Vocabulary.getStageInfo(progress.wordProgress);
+    if (stageInfo) {
+      this.setText('current-stage-name', stageInfo.stage.name);
+      this.setText('stage-learned', stageInfo.learned);
+      this.setText('stage-total', stageInfo.total);
+      const stagePercent = stageInfo.total > 0 ? (stageInfo.learned / stageInfo.total * 100) : 0;
+      const stageProgressFill = document.getElementById('stage-progress-fill');
+      if (stageProgressFill) {
+        stageProgressFill.style.width = `${stagePercent.toFixed(1)}%`;
+      }
+    } else {
+      // 所有阶段都学完了
+      this.setText('current-stage-name', '🎉 全部完成！');
+      this.setText('stage-learned', '--');
+      this.setText('stage-total', '--');
+    }
+
     // 总进度
     const totalLearned = progress.totalStats.totalLearned || 0;
     this.setText('stat-total-learned', totalLearned);

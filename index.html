@@ -63,6 +63,20 @@
           </div>
         </div>
 
+        <!-- 当前学习阶段 -->
+        <div class="progress-section" id="stage-section" style="margin-bottom: 8px;">
+          <div class="progress-section__header">
+            <span class="progress-section__label">📚 当前阶段</span>
+            <span class="progress-section__value" id="current-stage-name">--</span>
+          </div>
+          <div class="progress-bar">
+            <div class="progress-bar__fill" id="stage-progress-fill" style="width: 0%; background: var(--success);"></div>
+          </div>
+          <div style="font-size: 12px; color: var(--text-light); margin-top: 4px;">
+            阶段进度: <span id="stage-learned">0</span> / <span id="stage-total">0</span> 词
+          </div>
+        </div>
+
         <!-- 总进度 -->
         <div class="progress-section">
           <div class="progress-section__header">
