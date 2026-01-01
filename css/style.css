@@ -93,12 +93,14 @@ body {
 }
 
 /* ============================================
-   App 容器
+   App 容器 - 自适应所有屏幕
    ============================================ */
 .app {
-  max-width: 480px;
+  width: 100%;
+  max-width: 100%;
   margin: 0 auto;
   min-height: 100vh;
+  min-height: 100dvh; /* 动态视口高度，更好支持移动端 */
   background: var(--bg-primary);
   position: relative;
   display: flex;
@@ -1036,6 +1038,195 @@ body {
   .footer-info,
   .bottom-stats {
     padding-bottom: calc(var(--spacing-lg) + env(safe-area-inset-bottom));
+  }
+}
+
+/* ============================================
+   平板适配 (min-width: 768px)
+   ============================================ */
+@media (min-width: 768px) {
+  :root {
+    --font-size-xs: 14px;
+    --font-size-sm: 16px;
+    --font-size-md: 18px;
+    --font-size-lg: 22px;
+    --font-size-xl: 32px;
+    --font-size-2xl: 42px;
+    --font-size-3xl: 56px;
+    --spacing-sm: 12px;
+    --spacing-md: 20px;
+    --spacing-lg: 32px;
+    --spacing-xl: 48px;
+  }
+  
+  .header {
+    padding: var(--spacing-lg) var(--spacing-xl);
+  }
+  
+  .header__logo-icon { font-size: 36px; }
+  .header__logo-text { font-size: var(--font-size-lg); }
+  
+  .main {
+    padding: var(--spacing-xl);
+    gap: var(--spacing-lg);
+    max-width: 800px;
+    margin: 0 auto;
+  }
+  
+  /* 首页卡片 */
+  .task-card {
+    padding: var(--spacing-lg);
+    border-radius: var(--radius-xl);
+  }
+  
+  .task-card__title {
+    font-size: var(--font-size-lg);
+  }
+  
+  .task-card__stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--spacing-md);
+  }
+  
+  .task-card__stat {
+    padding: var(--spacing-md);
+    background: var(--bg-secondary);
+    border-radius: var(--radius-md);
+  }
+  
+  .task-card__stat-value { font-size: var(--font-size-xl); }
+  .task-card__stat-label { font-size: var(--font-size-sm); }
+  
+  .progress-bar { height: 12px; }
+  
+  .mastered-section__content {
+    gap: var(--spacing-lg);
+  }
+  
+  .mastered-stat__value { font-size: var(--font-size-xl); }
+  
+  .action-buttons {
+    gap: var(--spacing-md);
+    flex-direction: row;
+    flex-wrap: wrap;
+  }
+  
+  .btn {
+    padding: var(--spacing-md) var(--spacing-xl);
+    font-size: var(--font-size-md);
+    min-height: 56px;
+    flex: 1;
+    min-width: 180px;
+  }
+  
+  .footer-info {
+    padding: var(--spacing-md) var(--spacing-xl);
+    font-size: var(--font-size-sm);
+  }
+  
+  /* 学习页 */
+  .learn-progress {
+    padding: var(--spacing-sm) var(--spacing-xl);
+  }
+  
+  .word-card {
+    padding: var(--spacing-xl);
+    border-radius: var(--radius-xl);
+  }
+  
+  .word-card__image {
+    height: 280px;
+    border-radius: var(--radius-lg);
+  }
+  
+  .word-card__word { font-size: var(--font-size-2xl); }
+  .word-card__phonetic { font-size: var(--font-size-md); }
+  
+  .word-card__sentence {
+    padding: var(--spacing-md) var(--spacing-lg);
+    border-radius: var(--radius-md);
+  }
+  
+  .word-card__sentence-en { font-size: var(--font-size-md); }
+  .word-card__sentence-cn { font-size: var(--font-size-sm); }
+  
+  .options-grid {
+    gap: var(--spacing-md);
+    max-width: 100%;
+  }
+  
+  .option {
+    padding: var(--spacing-md) var(--spacing-lg);
+    min-height: 64px;
+    font-size: var(--font-size-md);
+    border-radius: var(--radius-md);
+  }
+  
+  #btn-continue {
+    font-size: var(--font-size-md);
+    padding: var(--spacing-md) var(--spacing-xl);
+  }
+  
+  /* 弹窗 */
+  .modal__content {
+    padding: var(--spacing-xl);
+    border-radius: var(--radius-xl);
+    max-width: 500px;
+  }
+  
+  .modal__icon { font-size: 80px; }
+  .modal__title { font-size: var(--font-size-xl); }
+  .modal__message { font-size: var(--font-size-md); }
+  
+  .stats-summary {
+    padding: var(--spacing-lg);
+    gap: var(--spacing-lg);
+  }
+  
+  .stats-summary__value { font-size: var(--font-size-xl); }
+}
+
+/* ============================================
+   大屏平板/桌面 (min-width: 1024px)
+   ============================================ */
+@media (min-width: 1024px) {
+  :root {
+    --font-size-xl: 36px;
+    --font-size-2xl: 48px;
+    --font-size-3xl: 64px;
+    --spacing-xl: 56px;
+  }
+  
+  .main {
+    max-width: 900px;
+    padding: var(--spacing-xl) var(--spacing-xl);
+  }
+  
+  .word-card__image {
+    height: 320px;
+  }
+  
+  .options-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+  }
+  
+  .option {
+    min-height: 72px;
+  }
+}
+
+/* ============================================
+   超大屏幕 (min-width: 1440px)
+   ============================================ */
+@media (min-width: 1440px) {
+  .main {
+    max-width: 1000px;
+  }
+  
+  .word-card__image {
+    height: 380px;
   }
 }
 
