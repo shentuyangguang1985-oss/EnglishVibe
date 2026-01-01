@@ -1408,3 +1408,127 @@ body {
   .footer-info { display: none; }
 }
 
+/* ============================================
+   PWA 独立模式适配 (安装到桌面后)
+   ============================================ */
+@media (display-mode: standalone), (display-mode: fullscreen) {
+  html, body, .app {
+    height: 100%;
+    max-height: 100%;
+    overflow: hidden;
+  }
+  
+  .main {
+    flex: 1;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+}
+
+/* PWA + 横屏模式 */
+@media (display-mode: standalone) and (orientation: landscape),
+       (display-mode: fullscreen) and (orientation: landscape) {
+  .header {
+    padding: 4px var(--spacing-md);
+    min-height: auto;
+  }
+  
+  .main {
+    padding: var(--spacing-xs) var(--spacing-lg);
+    gap: var(--spacing-xs);
+    justify-content: flex-start;
+  }
+  
+  .word-card {
+    padding: var(--spacing-xs) var(--spacing-sm);
+  }
+  
+  .word-card__image {
+    height: 90px;
+    max-height: 18vh;
+    margin-bottom: var(--spacing-xs);
+  }
+  
+  .word-card__word {
+    font-size: var(--font-size-lg);
+    margin-bottom: 0;
+  }
+  
+  .word-card__phonetic {
+    font-size: var(--font-size-xs);
+    margin-bottom: 2px;
+  }
+  
+  .word-card__sentence {
+    padding: 4px var(--spacing-xs);
+    margin-top: 4px;
+  }
+  
+  .word-card__sentence-en { font-size: var(--font-size-xs); }
+  .word-card__sentence-cn { font-size: 10px; }
+  
+  .options-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 4px;
+    margin-top: var(--spacing-xs);
+  }
+  
+  .option {
+    min-height: 40px;
+    padding: 4px var(--spacing-sm);
+    font-size: var(--font-size-xs);
+  }
+  
+  #btn-continue {
+    margin-top: var(--spacing-xs) !important;
+    padding: var(--spacing-xs) var(--spacing-md);
+    font-size: var(--font-size-sm);
+  }
+  
+  .footer-info {
+    padding: 2px var(--spacing-md);
+    font-size: 10px;
+  }
+}
+
+/* PWA + 横屏 + 小高度 */
+@media (display-mode: standalone) and (orientation: landscape) and (max-height: 600px),
+       (display-mode: fullscreen) and (orientation: landscape) and (max-height: 600px) {
+  .header { padding: 2px var(--spacing-sm); }
+  
+  .main {
+    padding: 2px var(--spacing-md);
+    gap: 2px;
+  }
+  
+  .word-card { padding: 4px; }
+  
+  .word-card__image {
+    height: 60px;
+    max-height: 12vh;
+    margin-bottom: 2px;
+  }
+  
+  .word-card__word { font-size: var(--font-size-md); }
+  .word-card__phonetic { font-size: 10px; }
+  
+  .word-card__sentence { display: none; }
+  
+  .options-grid { gap: 2px; margin-top: 4px; }
+  
+  .option {
+    min-height: 36px;
+    padding: 2px var(--spacing-xs);
+    font-size: 11px;
+  }
+  
+  #btn-continue {
+    padding: 4px var(--spacing-sm);
+    font-size: 12px;
+    min-height: 32px;
+  }
+  
+  .footer-info { display: none; }
+}
+
