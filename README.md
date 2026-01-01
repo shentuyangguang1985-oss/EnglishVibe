@@ -45,10 +45,11 @@
 
 | 平台 | 地址 | 说明 |
 |------|------|------|
-| **Cloudflare Pages** | [englishvibe.shentuyangguang1985.workers.dev](https://englishvibe.shentuyangguang1985.workers.dev) | 🇨🇳 **国内访问推荐** |
+| **GitHub Pages** | [shentuyangguang1985-oss.github.io/EnglishVibe](https://shentuyangguang1985-oss.github.io/EnglishVibe/) | ⭐ **推荐** |
 | **Vercel** | [english-vibe.vercel.app](https://english-vibe.vercel.app) | 备用地址 |
+| **Cloudflare** | [englishvibe.shentuyangguang1985.workers.dev](https://englishvibe.shentuyangguang1985.workers.dev) | 备用地址 |
 
-> 💡 **推荐使用 Cloudflare Pages 地址**，国内访问更快更稳定！
+> 💡 **推荐使用 GitHub Pages 地址**，免费稳定！
 
 ---
 
@@ -177,7 +178,8 @@ EnglishVibe/
 
 - [有道词典](https://dict.youdao.com) - 提供单词发音
 - [讯飞开放平台](https://www.xfyun.cn) - 提供例句TTS服务
-- [Cloudflare Pages](https://pages.cloudflare.com) - 提供免费托管服务
+- [GitHub Pages](https://pages.github.com) - 提供免费托管服务
+- [Cloudflare Pages](https://pages.cloudflare.com) - 提供备用托管服务
 
 ---
 

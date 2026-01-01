@@ -16,22 +16,35 @@ PWA（Progressive Web App）是一种可以像原生 APP 一样安装到手机�
 
 | 平台 | 地址 | 特点 |
 |------|------|------|
-| **Cloudflare Pages** | https://englishvibe.shentuyangguang1985.workers.dev | 🇨🇳 **国内访问推荐** |
+| **GitHub Pages** | https://shentuyangguang1985-oss.github.io/EnglishVibe/ | ⭐ **推荐** |
 | **Vercel** | https://english-vibe.vercel.app | 备用地址 |
+| **Cloudflare** | https://englishvibe.shentuyangguang1985.workers.dev | 备用地址 |
 
-> 💡 **强烈推荐使用 Cloudflare Pages 地址**，国内访问更快更稳定！
+> 💡 **推荐使用 GitHub Pages 地址**，免费稳定！
 
 ---
 
-## 🚀 方式一：Cloudflare Pages 部署（推荐）
+## 🚀 方式一：GitHub Pages 部署（推荐）
 
-### 为什么选择 Cloudflare Pages？
+### 为什么选择 GitHub Pages？
 
-- ✅ 国内访问速度快（比 Vercel 稳定）
+- ✅ 完全免费
+- ✅ 国内访问相对稳定
 - ✅ 自动部署（git push 即部署）
-- ✅ 免费额度大（500次构建/月，无限流量）
-- ✅ 支持自定义域名
-- ✅ 全球 CDN 加速
+- ✅ 配置简单
+
+### 部署步骤
+
+1. 将代码推送到 GitHub 仓库
+2. 进入仓库 **Settings** → **Pages**
+3. **Source** 选择 **Deploy from a branch**
+4. **Branch** 选择 **main** 和 **/ (root)**
+5. 点击 **Save**
+6. 等待 1-2 分钟，访问 `https://用户名.github.io/仓库名/`
+
+---
+
+## 🔷 方式二：Cloudflare Pages 部署
 
 ### 部署步骤
 
@@ -47,21 +60,11 @@ PWA（Progressive Web App）是一种可以像原生 APP 一样安装到手机�
 
 > ⚠️ 如果构建失败，确保项目根目录有 `wrangler.jsonc` 文件
 
-### wrangler.jsonc 配置
-
-```json
-{
-  "name": "englishvibe",
-  "compatibility_date": "2025-01-01",
-  "assets": {
-    "directory": "./"
-  }
-}
-```
+> ⚠️ 注意：`*.workers.dev` 域名在国内手机端可能被屏蔽
 
 ---
 
-## 🔷 方式二：Vercel 部署
+## 🔹 方式三：Vercel 部署
 
 ### 部署步骤
 
