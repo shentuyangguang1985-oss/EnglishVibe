@@ -738,6 +738,7 @@ body {
 .goal-selector {
   display: flex;
   gap: var(--spacing-sm);
+  margin-left: var(--spacing-lg); /* 与"每日目标"文字保持间距 */
 }
 
 .goal-option {
@@ -747,6 +748,7 @@ body {
   cursor: pointer;
   transition: all var(--transition-fast);
   font-size: var(--font-size-sm);
+  white-space: nowrap; /* 防止文字换行 */
 }
 
 .goal-option:hover {
@@ -1248,7 +1250,7 @@ body {
     flex: 1;
     justify-content: center;
     overflow: auto;
-    max-width: 900px;
+    max-width: 95%; /* 横屏时使用更宽的布局 */
   }
   
   .header {
@@ -1257,60 +1259,63 @@ body {
     flex-shrink: 0;
   }
   
-  /* 单词卡片压缩 */
+  /* 单词卡片 - 横屏时更宽 */
   .word-card {
-    padding: var(--spacing-sm) var(--spacing-md);
+    padding: var(--spacing-md) var(--spacing-lg);
     flex-shrink: 0;
+    max-width: 100%;
   }
   
   .word-card__image {
-    height: 140px;
-    max-height: 20vh;
-    margin-bottom: var(--spacing-xs);
+    height: 160px;
+    max-height: 22vh;
+    margin-bottom: var(--spacing-sm);
   }
   
   .word-card__word {
-    font-size: var(--font-size-xl);
-    margin-bottom: 2px;
+    font-size: var(--font-size-2xl);
+    margin-bottom: 4px;
   }
   
   .word-card__phonetic {
-    font-size: var(--font-size-sm);
-    margin-bottom: var(--spacing-xs);
+    font-size: var(--font-size-md);
+    margin-bottom: var(--spacing-sm);
   }
   
   .word-card__sentence {
-    margin-top: var(--spacing-xs);
-    padding: var(--spacing-xs) var(--spacing-sm);
+    margin-top: var(--spacing-sm);
+    padding: var(--spacing-sm) var(--spacing-md);
   }
   
-  .word-card__sentence-en { font-size: var(--font-size-sm); }
-  .word-card__sentence-cn { font-size: var(--font-size-xs); }
+  .word-card__sentence-en { font-size: var(--font-size-md); }
+  .word-card__sentence-cn { font-size: var(--font-size-sm); }
   
-  /* 选项横向 2x2 排列 */
+  /* 选项横向 4个一排 */
   .options-grid {
     display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: var(--spacing-xs);
+    grid-template-columns: repeat(4, 1fr);
+    gap: var(--spacing-sm);
     margin-top: var(--spacing-sm);
     flex-shrink: 0;
+    max-width: 100%;
   }
   
   .option {
-    min-height: 48px;
-    padding: var(--spacing-xs) var(--spacing-md);
-    font-size: var(--font-size-sm);
+    min-height: 56px;
+    padding: var(--spacing-sm) var(--spacing-md);
+    font-size: var(--font-size-md);
   }
   
   #btn-continue {
     margin-top: var(--spacing-sm) !important;
     padding: var(--spacing-sm) var(--spacing-lg);
     flex-shrink: 0;
+    font-size: var(--font-size-md);
   }
   
   .footer-info {
-    padding: var(--spacing-xs) var(--spacing-lg);
-    font-size: var(--font-size-xs);
+    padding: var(--spacing-sm) var(--spacing-lg);
+    font-size: var(--font-size-sm);
     flex-shrink: 0;
   }
 }
