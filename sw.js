@@ -3,7 +3,7 @@
  * 实现PWA离线缓存功能
  */
 
-const CACHE_NAME = 'englishvibe-v49';
+const CACHE_NAME = 'englishvibe-v50';
 
 // 需要缓存的静态资源
 const STATIC_ASSETS = [
@@ -21,13 +21,13 @@ const STATIC_ASSETS = [
   './js/learn.js',
   './js/review.js',
   './js/xfyun-tts.js',
-  './manifest.json'
+  './manifest.json',
+  './data/vocab_all.json'
 ];
 
-// 词库文件（按需缓存）
+// 词库文件（按需缓存）- 保留兼容性
 const VOCAB_FILES = [
-  './data/vocab_grade7_core.json',
-  './data/vocab_grade7_core2.json'
+  './data/vocab_all.json'
 ];
 
 // 安装阶段：缓存静态资源
