@@ -1060,16 +1060,16 @@ body {
   }
   
   .header {
-    padding: var(--spacing-lg) var(--spacing-xl);
+    padding: var(--spacing-md) var(--spacing-xl);
   }
   
   .header__logo-icon { font-size: 36px; }
   .header__logo-text { font-size: var(--font-size-lg); }
   
   .main {
-    padding: var(--spacing-xl);
+    padding: var(--spacing-lg) var(--spacing-xl);
     gap: var(--spacing-lg);
-    max-width: 800px;
+    max-width: 90%; /* 平板竖屏：使用90%宽度减少留白 */
     margin: 0 auto;
   }
   
@@ -1530,5 +1530,97 @@ body {
   }
   
   .footer-info { display: none; }
+}
+
+/* ============================================
+   设置页 - 横屏适配
+   ============================================ */
+@media (orientation: landscape) {
+  /* 设置页需要能滚动 */
+  .app {
+    max-height: none;
+    overflow: visible;
+  }
+  
+  .main {
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  
+  /* 设置页特殊处理 */
+  .settings-section {
+    margin-bottom: var(--spacing-sm);
+  }
+  
+  .settings-section__title {
+    padding: var(--spacing-sm) var(--spacing-md);
+    font-size: var(--font-size-sm);
+  }
+  
+  .settings-item {
+    padding: var(--spacing-sm) var(--spacing-md);
+  }
+}
+
+/* 平板横屏设置页 */
+@media (min-width: 768px) and (orientation: landscape) {
+  /* 设置页使用更宽的布局 */
+  .settings-section {
+    max-width: 700px;
+    margin-left: auto;
+    margin-right: auto;
+    margin-bottom: var(--spacing-md);
+  }
+  
+  .settings-section__title {
+    padding: var(--spacing-md) var(--spacing-lg);
+  }
+  
+  .settings-item {
+    padding: var(--spacing-md) var(--spacing-lg);
+  }
+  
+  /* 每日目标按钮组横向排列 */
+  .goal-options {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--spacing-sm);
+  }
+  
+  .goal-btn {
+    flex: 1;
+    min-width: 80px;
+  }
+}
+
+/* ============================================
+   平板竖屏 - 减少留白
+   ============================================ */
+@media (min-width: 768px) and (orientation: portrait) {
+  .main {
+    max-width: 85%;
+    padding: var(--spacing-lg) var(--spacing-md);
+  }
+  
+  .word-card {
+    padding: var(--spacing-lg);
+  }
+  
+  .word-card__image {
+    height: 240px;
+  }
+  
+  .options-grid {
+    max-width: 100%;
+  }
+  
+  .option {
+    min-height: 60px;
+  }
+  
+  /* 设置页竖屏 */
+  .settings-section {
+    max-width: 100%;
+  }
 }
 

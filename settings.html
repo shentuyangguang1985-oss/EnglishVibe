@@ -12,7 +12,7 @@
   <link rel="icon" type="image/svg+xml" href="./assets/icons/icon.svg">
 </head>
 <body>
-  <div class="app" id="app">
+  <div class="app" id="app" style="max-height: none; overflow: visible;">
     <!-- 顶部导航 -->
     <header class="header">
       <button class="header__back" id="btn-back">
@@ -24,7 +24,7 @@
     </header>
 
     <!-- 主内容区 -->
-    <main class="main">
+    <main class="main" style="overflow-y: auto; -webkit-overflow-scrolling: touch; flex: 1;">
       <!-- 学习设置 -->
       <div class="settings-section">
         <div class="settings-section__title">学习设置</div>
