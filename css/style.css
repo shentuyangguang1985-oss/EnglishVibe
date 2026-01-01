@@ -1561,6 +1561,79 @@ body {
   }
 }
 
+/* PWA + 横屏 - 更紧凑布局 */
+@media (display-mode: standalone) and (orientation: landscape),
+       (display-mode: fullscreen) and (orientation: landscape) {
+  /* 首页进一步压缩 */
+  .task-card {
+    padding: var(--spacing-xs) var(--spacing-sm);
+  }
+  
+  .task-card__title {
+    font-size: var(--font-size-sm);
+    margin-bottom: 4px;
+    padding-bottom: 4px;
+  }
+  
+  .task-card__title-icon { font-size: 16px; }
+  
+  .task-card__stats {
+    gap: 4px;
+    margin-bottom: 4px;
+  }
+  
+  .task-card__stat {
+    padding: 4px;
+  }
+  
+  .task-card__stat-label { font-size: 9px; }
+  .task-card__stat-value { font-size: var(--font-size-xs); }
+  
+  .progress-section {
+    margin-top: 4px;
+    padding-top: 4px;
+  }
+  
+  .progress-section__label { font-size: 10px; }
+  .progress-section__value { font-size: 10px; }
+  .progress-bar { height: 5px; }
+  
+  /* 阶段进度隐藏详细文字 */
+  #stage-section > div:last-child {
+    display: none;
+  }
+  
+  .mastered-section {
+    margin-top: 4px;
+    padding-top: 4px;
+  }
+  
+  .mastered-stat__icon { font-size: 12px; }
+  .mastered-stat__value { font-size: var(--font-size-sm); }
+  .mastered-stat__label { font-size: 9px; }
+  .mastered-stat__unit { font-size: 9px; }
+  
+  .action-buttons {
+    gap: 4px;
+    margin-top: 4px;
+  }
+  
+  .action-buttons .btn {
+    padding: 6px var(--spacing-sm);
+    font-size: 11px;
+    min-height: 32px;
+  }
+  
+  .btn__icon { font-size: 12px; }
+  
+  .footer-info {
+    padding: 2px var(--spacing-sm);
+    font-size: 9px;
+  }
+  
+  .footer-info small { font-size: 8px; }
+}
+
 /* PWA + 横屏 + 小高度 */
 @media (display-mode: standalone) and (orientation: landscape) and (max-height: 600px),
        (display-mode: fullscreen) and (orientation: landscape) and (max-height: 600px) {
