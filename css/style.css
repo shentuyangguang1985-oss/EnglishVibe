@@ -1445,6 +1445,69 @@ body {
     justify-content: flex-start;
   }
   
+  /* 首页 - PWA横屏适配 */
+  .task-card {
+    padding: var(--spacing-sm);
+  }
+  
+  .task-card__title {
+    font-size: var(--font-size-md);
+    margin-bottom: var(--spacing-xs);
+    padding-bottom: var(--spacing-xs);
+  }
+  
+  .task-card__title-icon { font-size: 18px; }
+  
+  .task-card__stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--spacing-xs);
+    margin-bottom: var(--spacing-xs);
+  }
+  
+  .task-card__stat {
+    padding: var(--spacing-xs);
+    background: var(--bg-secondary);
+    border-radius: var(--radius-sm);
+    flex-direction: column;
+    text-align: center;
+  }
+  
+  .task-card__stat-label { font-size: 10px; }
+  .task-card__stat-value { font-size: var(--font-size-sm); }
+  
+  .progress-section {
+    margin-top: var(--spacing-xs);
+    padding-top: var(--spacing-xs);
+  }
+  
+  .progress-section__label { font-size: 11px; }
+  .progress-section__value { font-size: 11px; }
+  .progress-bar { height: 6px; }
+  
+  .mastered-section {
+    margin-top: var(--spacing-xs);
+    padding-top: var(--spacing-xs);
+  }
+  
+  .mastered-stat__icon { font-size: 14px; }
+  .mastered-stat__value { font-size: var(--font-size-md); }
+  .mastered-stat__label { font-size: 10px; }
+  
+  .action-buttons {
+    gap: var(--spacing-xs);
+    margin-top: var(--spacing-xs);
+    flex-direction: row;
+  }
+  
+  .action-buttons .btn {
+    flex: 1;
+    padding: var(--spacing-xs) var(--spacing-sm);
+    font-size: var(--font-size-xs);
+    min-height: 36px;
+  }
+  
+  /* 学习页 */
   .word-card {
     padding: var(--spacing-xs) var(--spacing-sm);
   }
