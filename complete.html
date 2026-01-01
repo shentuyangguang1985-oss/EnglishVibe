@@ -183,6 +183,69 @@
       .stat-item__value { font-size: var(--font-size-md); }
       .stat-item__label { font-size: 9px; }
     }
+    
+    /* 平板横屏适配 */
+    @media (min-width: 768px) and (orientation: landscape) {
+      .complete-content {
+        max-width: 800px;
+        width: 90%;
+        margin: 0 auto;
+        padding: var(--spacing-lg);
+      }
+      
+      .stats-card {
+        max-width: 600px;
+        width: 100%;
+        padding: var(--spacing-lg);
+      }
+      
+      .stats-grid {
+        grid-template-columns: repeat(4, 1fr);
+        gap: var(--spacing-md);
+      }
+      
+      .stat-item {
+        padding: var(--spacing-md);
+      }
+      
+      .stat-item__icon {
+        font-size: 28px;
+        margin-bottom: var(--spacing-xs);
+      }
+      
+      .stat-item__value {
+        font-size: var(--font-size-2xl);
+      }
+      
+      .stat-item__label {
+        font-size: var(--font-size-sm);
+      }
+      
+      .complete-actions {
+        max-width: 600px;
+        width: 100%;
+        flex-direction: row;
+        gap: var(--spacing-md);
+      }
+      
+      .complete-actions .btn {
+        flex: 1;
+        padding: var(--spacing-md);
+        font-size: var(--font-size-md);
+      }
+      
+      .trophy {
+        font-size: 80px;
+      }
+      
+      .complete-title {
+        font-size: 32px;
+      }
+      
+      .complete-subtitle {
+        font-size: var(--font-size-lg);
+      }
+    }
   </style>
 </head>
 <body>
