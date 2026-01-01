@@ -1071,7 +1071,8 @@ body {
   .main {
     padding: var(--spacing-lg) var(--spacing-xl);
     gap: var(--spacing-lg);
-    max-width: 90%; /* 平板竖屏：使用90%宽度减少留白 */
+    max-width: 100%; /* 平板：使用100%宽度满屏显示 */
+    width: 100%;
     margin: 0 auto;
   }
   
@@ -1599,33 +1600,71 @@ body {
 }
 
 /* ============================================
-   平板竖屏 - 减少留白
+   平板竖屏 - 满屏显示
    ============================================ */
 @media (min-width: 768px) and (orientation: portrait) {
-  .main {
-    max-width: 85%;
-    padding: var(--spacing-lg) var(--spacing-md);
+  .app {
+    max-width: 100%;
+    width: 100%;
   }
   
+  .main {
+    max-width: 100%;
+    width: 100%;
+    padding: var(--spacing-lg) var(--spacing-xl);
+  }
+  
+  /* 首页卡片 */
+  .task-card {
+    max-width: 100%;
+    width: 100%;
+  }
+  
+  /* 学习页 */
   .word-card {
-    padding: var(--spacing-lg);
+    padding: var(--spacing-xl);
+    max-width: 100%;
   }
   
   .word-card__image {
-    height: 240px;
+    height: 280px;
+  }
+  
+  .word-card__word {
+    font-size: var(--font-size-2xl);
+  }
+  
+  .word-card__phonetic {
+    font-size: var(--font-size-lg);
   }
   
   .options-grid {
     max-width: 100%;
+    gap: var(--spacing-md);
   }
   
   .option {
-    min-height: 60px;
+    min-height: 64px;
+    font-size: var(--font-size-lg);
+  }
+  
+  .action-buttons {
+    flex-direction: row;
+    gap: var(--spacing-md);
+  }
+  
+  .btn {
+    flex: 1;
+    min-height: 56px;
   }
   
   /* 设置页竖屏 */
   .settings-section {
     max-width: 100%;
+  }
+  
+  .footer-info {
+    font-size: var(--font-size-md);
   }
 }
 
