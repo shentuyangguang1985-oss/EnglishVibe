@@ -214,7 +214,7 @@ ipconfig
 
 每次更新代码时，需要递增 `sw.js` 中的版本号：
 ```javascript
-const CACHE_NAME = 'englishvibe-v49';  // 递增此版本号
+const CACHE_NAME = 'englishvibe-v61';  // 递增此版本号
 ```
 
 ---
@@ -240,4 +240,4 @@ const CACHE_NAME = 'englishvibe-v49';  // 递增此版本号
 
 ---
 
-*最后更新：2025-01-01*
+*最后更新：2026-01-01 v61*
