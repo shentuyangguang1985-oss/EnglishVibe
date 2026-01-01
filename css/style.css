@@ -1561,9 +1561,24 @@ body {
   }
 }
 
-/* PWA + 横屏 - 更紧凑布局 */
+/* PWA + 横屏 - 首页可滚动并紧凑布局 */
 @media (display-mode: standalone) and (orientation: landscape),
        (display-mode: fullscreen) and (orientation: landscape) {
+  /* 允许首页滚动 */
+  .app {
+    max-height: none;
+    height: auto;
+    min-height: 100vh;
+    min-height: 100dvh;
+    overflow-y: auto;
+  }
+  
+  .main {
+    justify-content: flex-start;
+    overflow: visible;
+    padding-bottom: var(--spacing-lg);
+  }
+  
   /* 首页进一步压缩 */
   .task-card {
     padding: var(--spacing-xs) var(--spacing-sm);
@@ -1629,6 +1644,7 @@ body {
   .footer-info {
     padding: 2px var(--spacing-sm);
     font-size: 9px;
+    position: relative;
   }
   
   .footer-info small { font-size: 8px; }
