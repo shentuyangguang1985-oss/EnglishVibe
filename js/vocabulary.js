@@ -96,18 +96,28 @@ const Vocabulary = {
     }
   },
 
-  // 内嵌备用词库（确保应用即使网络失败也能工作）
+  // 内嵌备用词库（确保应用即使网络失败也能工作，包含30个常用词）
   fallbackWords: [
-    { id: 'f1', word: 'hello', phonetic: '/həˈloʊ/', meaning: 'int. 你好', sentence: 'Hello, how are you?', sentenceCn: '你好，你好吗？' },
-    { id: 'f2', word: 'world', phonetic: '/wɜːrld/', meaning: 'n. 世界', sentence: 'The world is beautiful.', sentenceCn: '世界是美丽的。' },
-    { id: 'f3', word: 'school', phonetic: '/skuːl/', meaning: 'n. 学校', sentence: 'I go to school every day.', sentenceCn: '我每天去上学。' },
-    { id: 'f4', word: 'teacher', phonetic: '/ˈtiːtʃər/', meaning: 'n. 老师', sentence: 'My teacher is very kind.', sentenceCn: '我的老师很和蔼。' },
-    { id: 'f5', word: 'student', phonetic: '/ˈstuːdnt/', meaning: 'n. 学生', sentence: 'He is a good student.', sentenceCn: '他是个好学生。' },
-    { id: 'f6', word: 'book', phonetic: '/bʊk/', meaning: 'n. 书', sentence: 'I like reading books.', sentenceCn: '我喜欢读书。' },
-    { id: 'f7', word: 'friend', phonetic: '/frend/', meaning: 'n. 朋友', sentence: 'She is my best friend.', sentenceCn: '她是我最好的朋友。' },
-    { id: 'f8', word: 'family', phonetic: '/ˈfæmɪli/', meaning: 'n. 家庭', sentence: 'I love my family.', sentenceCn: '我爱我的家人。' },
-    { id: 'f9', word: 'happy', phonetic: '/ˈhæpi/', meaning: 'adj. 快乐的', sentence: 'I am very happy today.', sentenceCn: '我今天很开心。' },
-    { id: 'f10', word: 'learn', phonetic: '/lɜːrn/', meaning: 'v. 学习', sentence: 'I want to learn English.', sentenceCn: '我想学英语。' }
+    { id: 'f1', word: 'introduce', phonetic: '/ˌɪntrəˈdjuːs/', meaning: 'v. 介绍', sentence: 'Let me introduce myself.', sentenceCn: '让我介绍一下我自己。' },
+    { id: 'f2', word: 'capital', phonetic: '/ˈkæpɪtl/', meaning: 'n. 首都', sentence: 'Beijing is the capital of China.', sentenceCn: '北京是中国的首都。' },
+    { id: 'f3', word: 'factory', phonetic: '/ˈfæktri/', meaning: 'n. 工厂', sentence: 'My father works in a factory.', sentenceCn: '我父亲在工厂工作。' },
+    { id: 'f4', word: 'university', phonetic: '/ˌjuːnɪˈvɜːrsəti/', meaning: 'n. 大学', sentence: 'I want to go to university.', sentenceCn: '我想上大学。' },
+    { id: 'f5', word: 'hospital', phonetic: '/ˈhɒspɪtl/', meaning: 'n. 医院', sentence: 'The hospital is near here.', sentenceCn: '医院就在附近。' },
+    { id: 'f6', word: 'theatre', phonetic: '/ˈθɪətər/', meaning: 'n. 剧院', sentence: 'We went to the theatre.', sentenceCn: '我们去了剧院。' },
+    { id: 'f7', word: 'village', phonetic: '/ˈvɪlɪdʒ/', meaning: 'n. 村庄', sentence: 'I live in a small village.', sentenceCn: '我住在一个小村庄。' },
+    { id: 'f8', word: 'mountain', phonetic: '/ˈmaʊntən/', meaning: 'n. 山', sentence: 'The mountain is very high.', sentenceCn: '这座山很高。' },
+    { id: 'f9', word: 'ancestor', phonetic: '/ˈænsestər/', meaning: 'n. 祖先', sentence: 'Our ancestors lived here.', sentenceCn: '我们的祖先住在这里。' },
+    { id: 'f10', word: 'character', phonetic: '/ˈkærəktər/', meaning: 'n. 人物；性格', sentence: 'He has a good character.', sentenceCn: '他性格很好。' },
+    { id: 'f11', word: 'especially', phonetic: '/ɪˈspeʃəli/', meaning: 'adv. 尤其', sentence: 'I like fruits, especially apples.', sentenceCn: '我喜欢水果，尤其是苹果。' },
+    { id: 'f12', word: 'foreign', phonetic: '/ˈfɒrən/', meaning: 'adj. 外国的', sentence: 'I like foreign movies.', sentenceCn: '我喜欢外国电影。' },
+    { id: 'f13', word: 'popular', phonetic: '/ˈpɒpjələr/', meaning: 'adj. 受欢迎的', sentence: 'This song is very popular.', sentenceCn: '这首歌很受欢迎。' },
+    { id: 'f14', word: 'traditional', phonetic: '/trəˈdɪʃənl/', meaning: 'adj. 传统的', sentence: 'This is a traditional festival.', sentenceCn: '这是一个传统节日。' },
+    { id: 'f15', word: 'experience', phonetic: '/ɪkˈspɪəriəns/', meaning: 'n. 经历；经验', sentence: 'It was a great experience.', sentenceCn: '这是一次很棒的经历。' },
+    { id: 'f16', word: 'environment', phonetic: '/ɪnˈvaɪrənmənt/', meaning: 'n. 环境', sentence: 'We should protect the environment.', sentenceCn: '我们应该保护环境。' },
+    { id: 'f17', word: 'pollution', phonetic: '/pəˈluːʃn/', meaning: 'n. 污染', sentence: 'Air pollution is serious.', sentenceCn: '空气污染很严重。' },
+    { id: 'f18', word: 'recycle', phonetic: '/ˌriːˈsaɪkl/', meaning: 'v. 回收利用', sentence: 'We should recycle paper.', sentenceCn: '我们应该回收纸张。' },
+    { id: 'f19', word: 'technology', phonetic: '/tekˈnɒlədʒi/', meaning: 'n. 技术', sentence: 'Technology is changing our life.', sentenceCn: '技术正在改变我们的生活。' },
+    { id: 'f20', word: 'communicate', phonetic: '/kəˈmjuːnɪkeɪt/', meaning: 'v. 交流', sentence: 'We communicate by email.', sentenceCn: '我们通过电子邮件交流。' }
   ],
 
   /**
@@ -138,9 +148,9 @@ const Vocabulary = {
           })
       );
 
-      // 添加超时控制（10秒）
+      // 添加超时控制（30秒，手机网络可能较慢）
       const timeoutPromise = new Promise((_, reject) => 
-        setTimeout(() => reject(new Error('Load timeout')), 10000)
+        setTimeout(() => reject(new Error('Load timeout')), 30000)
       );
 
       const results = await Promise.race([
