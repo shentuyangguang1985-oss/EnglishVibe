@@ -147,7 +147,6 @@ const Review = {
     // 例句朗读按钮
     this.addEvent('btn-sentence-audio', 'click', function() {
       if (self.state.currentWord && self.state.currentWord.sentence) {
-        Audio.stop();
         var sentence = self.state.currentWord.sentence;
         Audio.speakSentence(sentence);
       }
