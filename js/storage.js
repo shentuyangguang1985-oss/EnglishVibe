@@ -3,25 +3,6 @@
  * 负责所有数据的本地持久化
  */
 
-// 简单混淆（反转+Base64），防止密钥明文暴露
-var _XF = (function() {
-  // 解码函数：Base64解码后反转
-  function d(s) {
-    try {
-      return atob(s).split('').reverse().join('');
-    } catch(e) { return ''; }
-  }
-  // 混淆后的值（原始值反转后Base64编码）
-  return {
-    // APPID: 6395bf5d
-    a: d('ZDVmYjU5MzY='),
-    // API Key: 52dc1fbb4fc3a4dd4e057634cf8d4bc1
-    k: d('MWNiNGQ4ZmM0MzY3NTBlNGRkNGEzY2Y0YmJmMWNkMjU='),
-    // API Secret: MTNmMjMwMWEzMzI5OWYyZmI1MGQ0ZTcy
-    s: d('eWNUWjBRR00xSW1aeVlXTzVJek16RVdNd01qTW1OVE0=')
-  };
-})();
-
 const Storage = {
   // 存储键前缀
   PREFIX: 'ev_',
@@ -209,25 +190,22 @@ const Storage = {
    * @returns {Object} 设置对象
    */
   getSettings() {
-    var settings = this.load('settings', {
+    const defaults = {
       dailyGoal: 20,
       autoPlayAudio: true,
       showSentence: true,
       vibrationEnabled: true,
-      xfyunAppId: '',
-      xfyunApiKey: '',
-      xfyunApiSecret: '',
-      usePremiumTTS: false
-    });
-    
-    // 如果讯飞配置为空，使用默认值
-    if (!settings.xfyunAppId) {
-      settings.xfyunAppId = _XF.a;
-      settings.xfyunApiKey = _XF.k;
-      settings.xfyunApiSecret = _XF.s;
-      settings.usePremiumTTS = true;
+      usePremiumTTS: true
+    };
+    const settings = this.load('settings', defaults);
+    if (!settings || typeof settings !== 'object') return defaults;
+
+    if ('xfyunAppId' in settings || 'xfyunApiKey' in settings || 'xfyunApiSecret' in settings) {
+      const cleanSettings = this.cleanSettings(settings);
+      this.save('settings', cleanSettings);
+      return cleanSettings;
     }
-    
+
     return settings;
   },
 
@@ -236,7 +214,15 @@ const Storage = {
    * @param {Object} settings - 设置对象
    */
   saveSettings(settings) {
-    return this.save('settings', settings);
+    return this.save('settings', this.cleanSettings(settings));
+  },
+
+  cleanSettings(settings) {
+    const cleanSettings = { ...settings };
+    delete cleanSettings.xfyunAppId;
+    delete cleanSettings.xfyunApiKey;
+    delete cleanSettings.xfyunApiSecret;
+    return cleanSettings;
   },
 
   /**

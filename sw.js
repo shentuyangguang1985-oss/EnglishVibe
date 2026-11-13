@@ -3,7 +3,9 @@
  * 实现PWA离线缓存功能
  */
 
-const CACHE_NAME = 'englishvibe-v64';
+const CACHE_PREFIX = 'englishvibe:' + self.registration.scope + ':';
+const CACHE_NAME = CACHE_PREFIX + 'v65';
+const SCOPE_URL = new URL(self.registration.scope);
 
 // 需要缓存的静态资源
 const STATIC_ASSETS = [
@@ -14,13 +16,14 @@ const STATIC_ASSETS = [
   './settings.html',
   './complete.html',
   './css/style.css',
+  './assets/icons/icon.svg',
   './js/app.js',
   './js/storage.js',
   './js/vocabulary.js',
   './js/audio.js',
   './js/learn.js',
   './js/review.js',
-  './js/xfyun-tts.js',
+  './js/sentence-tts.js',
   './manifest.json',
   './data/vocab_all.json'
 ];
@@ -38,14 +41,13 @@ self.addEventListener('install', event => {
     caches.open(CACHE_NAME)
       .then(cache => {
         console.log('[SW] Caching static assets');
-        return cache.addAll(STATIC_ASSETS);
+        return cache.addAll(STATIC_ASSETS.map(path => new Request(
+          new URL(path, SCOPE_URL), { cache: 'reload' }
+        )));
       })
       .then(() => {
         // 跳过等待，立即激活
         return self.skipWaiting();
-      })
-      .catch(err => {
-        console.error('[SW] Install failed:', err);
       })
   );
 });
@@ -59,7 +61,9 @@ self.addEventListener('activate', event => {
       .then(keys => {
         return Promise.all(
           keys
-            .filter(key => key !== CACHE_NAME)
+            .filter(key => key !== CACHE_NAME && (
+              key.startsWith(CACHE_PREFIX) || /^englishvibe-v\d+$/.test(key)
+            ))
             .map(key => {
               console.log('[SW] Deleting old cache:', key);
               return caches.delete(key);
@@ -82,8 +86,8 @@ self.addEventListener('fetch', event => {
   if (request.method !== 'GET') return;
   
   // 跳过外部请求（如有道词典API）
-  if (!url.origin.includes(self.location.origin) && 
-      !url.href.includes('dict.youdao.com')) {
+  const isAppAsset = url.origin === SCOPE_URL.origin && url.pathname.startsWith(SCOPE_URL.pathname);
+  if (!isAppAsset && url.origin !== 'https://dict.youdao.com') {
     return;
   }
   
@@ -94,7 +98,7 @@ self.addEventListener('fetch', event => {
   }
   
   // 对于HTML页面，使用网络优先策略
-  if (request.headers.get('accept').includes('text/html')) {
+  if (request.mode === 'navigate' || request.headers.get('accept')?.includes('text/html')) {
     event.respondWith(networkFirst(request));
     return;
   }
@@ -106,7 +110,7 @@ self.addEventListener('fetch', event => {
 // 缓存优先策略
 async function cacheFirst(request) {
   try {
-    const cached = await caches.match(request);
+    const cached = await (await caches.open(CACHE_NAME)).match(request);
     if (cached) {
       return cached;
     }
@@ -141,13 +145,13 @@ async function networkFirst(request) {
     return response;
   } catch (error) {
     // 网络失败，尝试从缓存获取
-    const cached = await caches.match(request);
+    const cached = await (await caches.open(CACHE_NAME)).match(request);
     if (cached) {
       return cached;
     }
     
     // 返回离线页面
-    return caches.match('./index.html');
+    return (await caches.open(CACHE_NAME)).match(new URL('./index.html', SCOPE_URL));
   }
 }
 

@@ -26,7 +26,7 @@
 
 ### 🔊 高品质发音
 - **有道词典真人发音** - 清晰标准的单词发音
-- **讯飞TTS例句朗读** - 流畅自然的例句发音（Luna 语音）
+- **例句朗读** - 使用毛球学堂的语音能力
 - **单词读两遍** - 间隔250ms，加深印象
 
 ### 📅 科学记忆
@@ -94,11 +94,11 @@ EnglishVibe/
 │   ├── review.js       # 复习逻辑
 │   ├── storage.js      # 存储模块（localStorage）
 │   ├── vocabulary.js   # 词库管理
-│   └── xfyun-tts.js    # 讯飞TTS（例句发音）
+│   └── sentence-tts.js    # 例句发音客户端
 ├── data/               # 词库数据 (JSON)
 ├── assets/             # 图标资源
 ├── manifest.json       # PWA 配置
-├── wrangler.jsonc      # Cloudflare Pages 配置
+├── wrangler.jsonc      # Cloudflare Worker 配置
 └── sw.js               # Service Worker
 ```
 
@@ -156,7 +156,7 @@ EnglishVibe/
 |------|------|
 | 前端 | 纯 HTML5 + CSS3 + Vanilla JavaScript |
 | 单词发音 | 有道词典 API |
-| 例句发音 | 讯飞 TTS WebSocket API (Luna 语音) |
+| 例句发音 | 毛球学堂语音服务 |
 | 存储 | LocalStorage |
 | PWA | Service Worker + Web App Manifest |
 | 部署 | Cloudflare Pages / Vercel |
@@ -182,7 +182,7 @@ EnglishVibe/
 ## 🙏 致谢
 
 - [有道词典](https://dict.youdao.com) - 提供单词发音
-- [讯飞开放平台](https://www.xfyun.cn) - 提供例句TTS服务
+- [毛球学堂](https://shentunotes.com/learn/tutor/) - 提供例句朗读
 - [GitHub Pages](https://pages.github.com) - 提供免费托管服务
 - [Cloudflare Pages](https://pages.cloudflare.com) - 提供备用托管服务
 
@@ -203,3 +203,17 @@ MIT License
 <p align="center">
   Made with ❤️ for 初中生
 </p>
+
+## 例句朗读与学习大厅接入
+
+EnglishVibe 向同源的 `api/tts` 请求例句音频。Worker 只接受 `data/vocab_all.json` 内的例句，并按来源 IP 限流，每个 Cloudflare 节点每分钟 20 次。Worker 调用毛球学堂现有的 `POST /learn/tutor/api/speak`，使用学堂服务端配置的语音模型。请求只向学堂发送例句文本。语音服务不可用时，回退到有道逐词发音。
+
+### 接入 shentunotes.com
+
+1. 将 `index.html`、`learn.html`、`review.html`、`settings.html`、`complete.html`、`manifest.json`、`sw.js`、`assets/`、`css/`、`js/` 和 `data/vocab_all.json` 复制到主站的静态构建输出 `learn/englishvibe/`。发布时同步删除旧版 `js/xfyun-tts.js`，并确保目录入口带尾部斜杠。
+2. 在主站 `/learn/` 添加「英语单词」入口，链接到 `/learn/englishvibe/`。
+3. 在 Cloudflare 给本仓库的 `englishvibe` Worker 配置路由 `shentunotes.com/learn/englishvibe/api/tts*`。Worker 会检查准确的接口路径，页面和静态文件由主站提供。备用 Worker 域名使用 `/api/tts`。
+4. 确认毛球学堂线上服务已配置语音，并验证 Worker 发往学堂的请求能返回英语音频。若该接口部署在同 Zone 的另一条 Worker Route 上，用名为 `TUTOR_SPEECH` 的 Service Binding 指向实际学堂 Worker。若学堂接口要求内部身份，在学堂侧配置服务间调用权限。EnglishVibe 浏览器端只调用自己的接口。
+5. 上线时分别验证学习页和复习页的有道发音及例句，检查离线能打开学习页和加载词库。旧地址的本机学习进度保留在原域名。新地址从空进度开始，已安装的旧 PWA 需从新地址重新安装。
+
+旧版讯飞凭据已公开，应在讯飞控制台撤销旧 API Key 和 API Secret。如有其他应用仍在使用，给那些应用配置新凭据。EnglishVibe 已切换到毛球学堂，无需录入新的讯飞凭据。Git 历史和旧设备缓存里的副本要以撤销后的凭据失效为准。

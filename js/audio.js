@@ -205,6 +205,8 @@ const Audio = {
    * 停止播放
    */
   stop() {
+    this.sentencePlayingId++;
+    if (typeof SentenceTTS !== 'undefined') SentenceTTS.stop();
     if (this.currentAudio) {
       this.currentAudio.pause();
       this.currentAudio.currentTime = 0;
@@ -243,41 +245,22 @@ const Audio = {
     }
     this.lastSentenceTime = now;
     
-    // 生成唯一ID，用于检测是否被新调用覆盖
-    this.sentencePlayingId++;
-    var currentId = this.sentencePlayingId;
-    
-    // 停止当前播放
     this.stop();
-    
-    // 清理句子：替换智能引号
-    var cleanSentence = sentence
-      .replace(/['']/g, "'")
-      .replace(/[""]/g, '"');
-    
-    console.log('Clean sentence:', cleanSentence);
-    
-    // 检查是否使用讯飞TTS
-    var settings = Storage.getSettings();
-    if (settings.usePremiumTTS && settings.xfyunAppId) {
-      console.log('Using Xfyun TTS...');
-      // 初始化讯飞配置
-      if (typeof XfyunTTS !== 'undefined') {
-        XfyunTTS.init();
-        XfyunTTS.speak(cleanSentence, {
-          onEnd: function() {
-            if (options.onEnd) options.onEnd();
-          },
-          onError: function(e) {
-            console.warn('Xfyun TTS failed, fallback to word-by-word:', e);
-            // 失败时回退到逐词播放
+    var currentId = this.sentencePlayingId;
+    var cleanSentence = sentence.trim();
+
+    if (Storage.getSettings().usePremiumTTS !== false && typeof SentenceTTS !== 'undefined') {
+      SentenceTTS.speak(cleanSentence, {
+        onEnd: options.onEnd,
+        onError: function() {
+          if (currentId === self.sentencePlayingId) {
             self.speakSentenceWithYoudao(cleanSentence, options, currentId);
           }
-        });
-        return;
-      }
+        }
+      });
+      return;
     }
-    
+
     // 使用逐词播放（免费方案）
     this.speakSentenceWithYoudao(cleanSentence, options, currentId);
   },

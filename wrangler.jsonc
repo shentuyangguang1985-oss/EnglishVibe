@@ -1,8 +1,18 @@
 {
   "name": "englishvibe",
-  "compatibility_date": "2025-01-01",
+  "main": "worker/tts.mjs",
+  "compatibility_date": "2026-11-13",
+  "compatibility_flags": ["enable_request_signal"],
   "assets": {
-    "directory": "./"
-  }
+    "directory": "./",
+    "binding": "ASSETS",
+    "run_worker_first": ["/api/tts", "/learn/englishvibe/api/tts*"]
+  },
+  "ratelimits": [
+    {
+      "name": "TTS_RATE_LIMITER",
+      "namespace_id": "1",
+      "simple": { "limit": 20, "period": 60 }
+    }
+  ]
 }
-
